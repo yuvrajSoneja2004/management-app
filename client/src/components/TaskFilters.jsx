@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, X } from 'lucide-react';
+import { User, Search, Filter, X } from 'lucide-react';
 
-const TaskFilters = ({ onFilterChange }) => {
+const TaskFilters = ({ onFilterChange, showMyTasks, onMyTasksToggle }) => {
     const [filters, setFilters] = useState({
         status: '',
         priority: '',
@@ -36,7 +36,7 @@ const TaskFilters = ({ onFilterChange }) => {
 
     return (
         <div className="space-y-3">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -46,6 +46,15 @@ const TaskFilters = ({ onFilterChange }) => {
                         className="pl-9"
                     />
                 </div>
+                <Button
+                    variant={showMyTasks ? "default" : "outline"}
+                    size="sm"
+                    onClick={onMyTasksToggle}
+                    className={showMyTasks ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                >
+                    <User className="h-4 w-4 mr-2" />
+                    My Tasks
+                </Button>
                 <Button
                     variant="outline"
                     size="sm"
@@ -72,12 +81,12 @@ const TaskFilters = ({ onFilterChange }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <div>
                         <label className="text-sm font-medium mb-1 block">Status</label>
-                        <Select value={filters.status} onValueChange={(v) => handleFilterChange('status', v)}>
+                        <Select value={filters.status || "ALL"} onValueChange={(v) => handleFilterChange('status', v === "ALL" ? "" : v)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="All statuses" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All statuses</SelectItem>
+                                <SelectItem value="ALL">All statuses</SelectItem>
                                 <SelectItem value="Todo">Todo</SelectItem>
                                 <SelectItem value="In Progress">In Progress</SelectItem>
                                 <SelectItem value="Review">Review</SelectItem>
@@ -88,12 +97,12 @@ const TaskFilters = ({ onFilterChange }) => {
 
                     <div>
                         <label className="text-sm font-medium mb-1 block">Priority</label>
-                        <Select value={filters.priority} onValueChange={(v) => handleFilterChange('priority', v)}>
+                        <Select value={filters.priority || "ALL"} onValueChange={(v) => handleFilterChange('priority', v === "ALL" ? "" : v)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="All priorities" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All priorities</SelectItem>
+                                <SelectItem value="ALL">All priorities</SelectItem>
                                 <SelectItem value="Low">Low</SelectItem>
                                 <SelectItem value="Medium">Medium</SelectItem>
                                 <SelectItem value="High">High</SelectItem>
@@ -104,12 +113,12 @@ const TaskFilters = ({ onFilterChange }) => {
 
                     <div>
                         <label className="text-sm font-medium mb-1 block">Sort By</label>
-                        <Select value={filters.sortBy} onValueChange={(v) => handleFilterChange('sortBy', v)}>
+                        <Select value={filters.sortBy || "DEFAULT"} onValueChange={(v) => handleFilterChange('sortBy', v === "DEFAULT" ? "" : v)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Default" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">Default (Updated)</SelectItem>
+                                <SelectItem value="DEFAULT">Default (Updated)</SelectItem>
                                 <SelectItem value="priority">Priority</SelectItem>
                                 <SelectItem value="status">Status</SelectItem>
                                 <SelectItem value="dueDate">Due Date</SelectItem>

@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CheckSquare, Trash2, UserPlus } from 'lucide-react';
 import { bulkUpdateStatus, bulkAssign, bulkDelete } from '../api/project';
 
-const BulkActions = ({ selectedTasks, onActionComplete }) => {
+const BulkActions = ({ selectedTasks, onActionComplete, members = [] }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     if (selectedTasks.length === 0) return null;
@@ -17,6 +17,19 @@ const BulkActions = ({ selectedTasks, onActionComplete }) => {
         } catch (error) {
             console.error('Bulk status update failed:', error);
             alert(error.response?.data?.message || 'Failed to update tasks');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleBulkAssign = async (assigneeId) => {
+        setIsLoading(true);
+        try {
+            await bulkAssign(selectedTasks, [assigneeId]);
+            onActionComplete();
+        } catch (error) {
+            console.error('Bulk assign failed:', error);
+            alert(error.response?.data?.message || 'Failed to assign tasks');
         } finally {
             setIsLoading(false);
         }
@@ -57,6 +70,20 @@ const BulkActions = ({ selectedTasks, onActionComplete }) => {
                         <SelectItem value="Completed">Completed</SelectItem>
                     </SelectContent>
                 </Select>
+
+                <Select onValueChange={handleBulkAssign} disabled={isLoading}>
+                    <SelectTrigger className="w-[140px] h-8">
+                        <SelectValue placeholder="Assign to..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {members.map((member) => (
+                            <SelectItem key={member.user._id} value={member.user._id}>
+                                {member.user.username}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
                 <Button
                     variant="destructive"
                     size="sm"

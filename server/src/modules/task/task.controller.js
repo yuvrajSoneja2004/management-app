@@ -2,6 +2,7 @@ const Task = require('./task.model');
 const Project = require('../project/project.model');
 const { logActivity } = require('../../utils/activity.utils');
 const { getUserRole, hasPermission } = require('../../utils/rbac.utils');
+const { createNotification } = require('../notification/notification.controller');
 
 // @desc    Create a new task
 // @route   POST /api/tasks
@@ -50,6 +51,22 @@ exports.createTask = async (req, res, next) => {
         // Emit socket event
         const io = req.app.get('io');
         io.to(projectId).emit('taskCreated', populatedTask);
+
+        // Notify assignees
+        if (assignees && assignees.length > 0) {
+            assignees.forEach(async (assigneeId) => {
+                if (assigneeId.toString() !== req.user._id.toString()) {
+                    await createNotification(
+                        assigneeId,
+                        'task_assigned',
+                        `You were assigned to task: ${title}`,
+                        projectId,
+                        task._id,
+                        req.user._id
+                    );
+                }
+            });
+        }
 
         res.status(201).json(populatedTask);
     } catch (error) {
@@ -158,27 +175,69 @@ exports.updateTask = async (req, res, next) => {
             return res.status(403).json({ message: 'Your role does not allow updating tasks' });
         }
 
-        const updatedTask = await Task.findByIdAndUpdate(
-            req.params.id,
-            { ...req.body, updatedBy: req.user._id },
-            { new: true }
-        )
+        const oldStatus = task.status;
+        const oldAssignees = task.assignees.map(a => a._id.toString());
+
+        task.title = req.body.title || task.title;
+        task.description = req.body.description || task.description;
+        task.status = req.body.status || task.status;
+        task.priority = req.body.priority || task.priority;
+        task.dueDate = req.body.dueDate || task.dueDate;
+        if (req.body.assignees) task.assignees = req.body.assignees;
+        task.updatedBy = req.user._id;
+
+        const updatedTask = await task.save();
+
+        const populatedTask = await Task.findById(updatedTask._id)
             .populate('assignees', 'username email')
             .populate('createdBy', 'username')
             .populate('updatedBy', 'username');
 
         // Log activity
-        await logActivity(updatedTask.project.toString(), req.user._id, 'task_updated', {
-            taskTitle: updatedTask.title,
-            taskId: updatedTask._id,
+        await logActivity(task.project, req.user._id, 'task_updated', {
+            taskTitle: task.title,
+            taskId: task._id,
             changes: req.body
         });
 
+        // Notifications
+        // 1. Status change
+        if (req.body.status && req.body.status !== oldStatus) {
+            populatedTask.assignees.forEach(async (assignee) => {
+                if (assignee._id.toString() !== req.user._id.toString()) {
+                    await createNotification(
+                        assignee._id,
+                        'task_updated',
+                        `Task "${task.title}" status changed to ${task.status}`,
+                        task.project,
+                        task._id,
+                        req.user._id
+                    );
+                }
+            });
+        }
+
+        // 2. New assignees
+        if (req.body.assignees) {
+            req.body.assignees.forEach(async (assigneeId) => {
+                if (!oldAssignees.includes(assigneeId) && assigneeId !== req.user._id.toString()) {
+                    await createNotification(
+                        assigneeId,
+                        'task_assigned',
+                        `You were assigned to task: ${task.title}`,
+                        task.project,
+                        task._id,
+                        req.user._id
+                    );
+                }
+            });
+        }
+
         // Emit socket event
         const io = req.app.get('io');
-        io.to(updatedTask.project.toString()).emit('taskUpdated', updatedTask);
+        io.to(task.project.toString()).emit('taskUpdated', populatedTask);
 
-        res.json(updatedTask);
+        res.json(populatedTask);
     } catch (error) {
         next(error);
     }

@@ -3,6 +3,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 
+const authRoutes = require('./modules/auth/auth.routes');
+const projectRoutes = require('./modules/project/project.routes');
+const taskRoutes = require('./modules/task/task.routes');
+const fileRoutes = require('./modules/file/file.routes');
+const notificationRoutes = require('./modules/notification/notification.routes');
+
 const app = express();
 
 // Middleware
@@ -14,23 +20,19 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-const authRoutes = require('./modules/auth/auth.routes');
-const projectRoutes = require('./modules/project/project.routes');
-const taskRoutes = require('./modules/task/task.routes');
-const fileRoutes = require('./modules/file/file.routes');
-
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
-// Error Handling Middleware (Placeholder)
+// Error Handling Middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Server Error', error: err.message });

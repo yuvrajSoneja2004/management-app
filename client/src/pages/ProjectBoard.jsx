@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import useTaskStore from '../store/taskStore';
 import useProjectStore from '../store/projectStore';
+import useAuth from '../store/authStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -36,25 +37,49 @@ const ProjectBoard = () => {
         isLoading
     } = useTaskStore();
     const { currentProject, getProject } = useProjectStore();
+    const { user } = useAuth();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [showSidebar, setShowSidebar] = useState(false);
+    const [showMyTasks, setShowMyTasks] = useState(false);
     const [filters, setFilters] = useState({});
     const [newTask, setNewTask] = useState({
         title: '',
         description: '',
         status: 'Todo',
         priority: 'Medium',
-        projectId: id
+        projectId: id,
+        assignees: [],
+        dueDate: ''
     });
 
     useEffect(() => {
         getProject(id);
         fetchTasks(id);
 
-        const socket = io('http://localhost:5000');
+        const socket = io('http://localhost:5000', {
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            reconnectionAttempts: Infinity,
+            transports: ['websocket', 'polling']
+        });
 
-        socket.emit('joinProject', id);
+        // Connection status handlers
+        socket.on('connect', () => {
+            console.log('✅ Socket connected');
+            socket.emit('joinProject', id);
+        });
+
+        socket.on('disconnect', (reason) => {
+            console.log('❌ Socket disconnected:', reason);
+        });
+
+        socket.on('reconnect', (attemptNumber) => {
+            console.log('🔄 Socket reconnected after', attemptNumber, 'attempts');
+            socket.emit('joinProject', id);
+            fetchTasks(id); // Refresh tasks after reconnection
+        });
 
         socket.on('taskCreated', (task) => {
             addTask(task);
@@ -89,7 +114,9 @@ const ProjectBoard = () => {
             description: '',
             status: 'Todo',
             priority: 'Medium',
-            projectId: id
+            projectId: id,
+            assignees: [],
+            dueDate: ''
         });
     };
 
@@ -99,7 +126,19 @@ const ProjectBoard = () => {
 
     const handleFilterChange = (newFilters) => {
         setFilters(newFilters);
-        fetchTasks(id, newFilters);
+        fetchTasks(id, {
+            ...newFilters,
+            assignee: showMyTasks ? user?._id : newFilters.assignee
+        });
+    };
+
+    const handleMyTasksToggle = () => {
+        const newShowMyTasks = !showMyTasks;
+        setShowMyTasks(newShowMyTasks);
+        fetchTasks(id, {
+            ...filters,
+            assignee: newShowMyTasks ? user?._id : filters.assignee
+        });
     };
 
     const handleBulkActionComplete = () => {
@@ -107,8 +146,7 @@ const ProjectBoard = () => {
         fetchTasks(id, filters);
     };
 
-    const handleTaskSelect = (e, taskId) => {
-        e.stopPropagation();
+    const handleTaskSelect = (checked, taskId) => {
         toggleTaskSelection(taskId);
     };
 
@@ -201,6 +239,56 @@ const ProjectBoard = () => {
                                                     </Select>
                                                 </div>
                                             </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="assignees">Assignees</Label>
+                                                <Select
+                                                    onValueChange={(value) => {
+                                                        if (!newTask.assignees.includes(value)) {
+                                                            setNewTask({ ...newTask, assignees: [...newTask.assignees, value] });
+                                                        }
+                                                    }}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select members" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {currentProject?.members?.map(member => (
+                                                            <SelectItem key={member.user._id} value={member.user._id}>
+                                                                {member.user.username}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {newTask.assignees.map(assigneeId => {
+                                                        const member = currentProject?.members?.find(m => m.user._id === assigneeId);
+                                                        return (
+                                                            <span key={assigneeId} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                                                {member?.user.username}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setNewTask({
+                                                                        ...newTask,
+                                                                        assignees: newTask.assignees.filter(id => id !== assigneeId)
+                                                                    })}
+                                                                    className="hover:text-blue-900"
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="dueDate">Due Date</Label>
+                                                <Input
+                                                    id="dueDate"
+                                                    type="date"
+                                                    value={newTask.dueDate}
+                                                    onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                                                />
+                                            </div>
                                         </div>
                                         <DialogFooter>
                                             <Button type="submit">Create Task</Button>
@@ -212,12 +300,19 @@ const ProjectBoard = () => {
                     </div>
 
                     {/* Filters and Bulk Actions */}
-                    <div className="mb-4 space-y-3">
-                        <TaskFilters onFilterChange={handleFilterChange} />
-                        <BulkActions selectedTasks={selectedTasks} onActionComplete={handleBulkActionComplete} />
+                    <div className="mb-6 space-y-4">
+                        <TaskFilters
+                            onFilterChange={handleFilterChange}
+                            showMyTasks={showMyTasks}
+                            onMyTasksToggle={handleMyTasksToggle}
+                        />
+                        <BulkActions
+                            selectedTasks={selectedTasks}
+                            onActionComplete={handleBulkActionComplete}
+                            projectMembers={currentProject?.members || []}
+                        />
                     </div>
 
-                    {/* Kanban Board */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-[calc(100vh-280px)] overflow-x-auto">
                         {columns.map((column) => (
                             <div key={column} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex flex-col gap-4">
@@ -228,15 +323,14 @@ const ProjectBoard = () => {
                                         .map((task) => (
                                             <Card
                                                 key={task._id}
-                                                className={`cursor-pointer hover:shadow-md transition-shadow ${selectedTasks.includes(task._id) ? 'ring-2 ring-blue-500' : ''
-                                                    }`}
+                                                className={`cursor-pointer hover:shadow-md transition-shadow ${selectedTasks.includes(task._id) ? 'ring-2 ring-blue-500' : ''} ${task.assignees?.some(a => a._id === user?._id) ? 'border-l-4 border-l-blue-500' : ''}`}
                                                 onClick={() => setSelectedTask(task)}
                                             >
                                                 <CardHeader className="p-4">
                                                     <div className="flex items-start gap-2">
                                                         <Checkbox
                                                             checked={selectedTasks.includes(task._id)}
-                                                            onCheckedChange={(e) => handleTaskSelect(e, task._id)}
+                                                            onCheckedChange={(checked) => handleTaskSelect(checked, task._id)}
                                                             onClick={(e) => e.stopPropagation()}
                                                             className="mt-1"
                                                         />
@@ -244,9 +338,9 @@ const ProjectBoard = () => {
                                                             <CardTitle className="text-sm font-medium">{task.title}</CardTitle>
                                                             <div className="flex justify-between items-center mt-2">
                                                                 <span className={`text-xs px-2 py-1 rounded-full ${task.priority === 'Critical' ? 'bg-red-100 text-red-800' :
-                                                                        task.priority === 'High' ? 'bg-orange-100 text-orange-800' :
-                                                                            task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                                                'bg-green-100 text-green-800'
+                                                                    task.priority === 'High' ? 'bg-orange-100 text-orange-800' :
+                                                                        task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                                                            'bg-green-100 text-green-800'
                                                                     }`}>
                                                                     {task.priority}
                                                                 </span>
@@ -261,20 +355,26 @@ const ProjectBoard = () => {
                                         ))}
                                 </div>
                             </div>
+
                         ))}
                     </div>
                 </div>
+
+
             </div>
 
+
             {/* Sidebar */}
-            {showSidebar && (
-                <div className="w-80 bg-white dark:bg-gray-800 border-l p-4 overflow-y-auto">
-                    <div className="space-y-4">
-                        <ActivityFeed projectId={id} />
-                        <InvitationsList projectId={id} />
+            {
+                showSidebar && (
+                    <div className="w-80 bg-white dark:bg-gray-800 border-l p-4 overflow-y-auto">
+                        <div className="space-y-4">
+                            <ActivityFeed projectId={id} />
+                            <InvitationsList projectId={id} />
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Task Details Dialog */}
             <Dialog open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>
@@ -313,6 +413,25 @@ const ProjectBoard = () => {
                                 <Label className="font-semibold">Priority</Label>
                                 <p className="mt-2 text-sm">{selectedTask?.priority}</p>
                             </div>
+                            <div>
+                                <Label className="font-semibold">Assignees</Label>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                    {selectedTask?.assignees?.map(assignee => (
+                                        <span key={assignee._id} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                                            {assignee.username}
+                                        </span>
+                                    ))}
+                                    {selectedTask?.assignees?.length === 0 && (
+                                        <span className="text-sm text-gray-500">Unassigned</span>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <Label className="font-semibold">Due Date</Label>
+                                <p className="mt-2 text-sm">
+                                    {selectedTask?.dueDate ? new Date(selectedTask.dueDate).toLocaleDateString() : 'No due date'}
+                                </p>
+                            </div>
                         </div>
 
                         <div>
@@ -343,7 +462,7 @@ const ProjectBoard = () => {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     );
 };
 
