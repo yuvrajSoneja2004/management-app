@@ -270,10 +270,13 @@ exports.acceptInvitation = async (req, res, next) => {
             return res.status(400).json({ message: 'This invitation has expired' });
         }
 
-        // Check if invitation email matches current user's email
+        // Note: We allow any logged-in user to accept the invitation
+        // The invitation link acts as the authorization
+        // Optional: Check if invitation email matches (informational only)
         if (invitation.email !== req.user.email) {
-            return res.status(403).json({ message: 'This invitation is not for your email address' });
+            console.log(`Note: Invitation was sent to ${invitation.email} but accepted by ${req.user.email}`);
         }
+
 
         // Add user to project
         const project = await Project.findById(invitation.project._id);

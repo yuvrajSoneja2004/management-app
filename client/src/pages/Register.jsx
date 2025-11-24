@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,12 +12,21 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const { register, isLoading, error } = useAuthStore();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (useAuthStore.getState().isAuthenticated) {
+            const from = location.state?.from || '/';
+            navigate(from, { replace: true });
+        }
+    }, [navigate, location]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         await register(username, email, password);
         if (useAuthStore.getState().isAuthenticated) {
-            navigate('/');
+            const from = location.state?.from || '/';
+            navigate(from, { replace: true });
         }
     };
 

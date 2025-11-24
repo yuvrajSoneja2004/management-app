@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 import api from '../api/axios';
+import useAuthStore from './authStore';
 
 const useProjectStore = create((set, get) => ({
     projects: [],
     currentProject: null,
+    userRole: null, // Current user's role in the current project
     isLoading: false,
     error: null,
 
@@ -35,7 +37,22 @@ const useProjectStore = create((set, get) => ({
         set({ isLoading: true });
         try {
             const res = await api.get(`/projects/${id}`);
-            set({ currentProject: res.data, isLoading: false });
+            const project = res.data;
+
+            // Determine user's role in this project
+            const currentUser = useAuthStore.getState().user;
+            let role = null;
+
+            if (project.owner._id === currentUser._id || project.owner === currentUser._id) {
+                role = 'Owner';
+            } else {
+                const member = project.members.find(m =>
+                    (m.user._id || m.user) === currentUser._id
+                );
+                role = member?.role || null;
+            }
+
+            set({ currentProject: project, userRole: role, isLoading: false });
         } catch (error) {
             set({ error: error.message, isLoading: false });
         }

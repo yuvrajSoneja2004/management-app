@@ -7,7 +7,7 @@ export const inviteMember = async (projectId, email, role) => {
 };
 
 export const acceptInvitation = async (token) => {
-    const res = await api.post(`/invitations/${token}/accept`);
+    const res = await api.post(`/projects/invitations/${token}/accept`);
     return res.data;
 };
 
@@ -17,7 +17,7 @@ export const getProjectInvitations = async (projectId) => {
 };
 
 export const cancelInvitation = async (invitationId) => {
-    const res = await api.delete(`/invitations/${invitationId}`);
+    const res = await api.delete(`/projects/invitations/${invitationId}`);
     return res.data;
 };
 

@@ -1,6 +1,7 @@
 const Task = require('./task.model');
 const Project = require('../project/project.model');
 const { logActivity } = require('../../utils/activity.utils');
+const { getUserRole, hasPermission } = require('../../utils/rbac.utils');
 
 // @desc    Create a new task
 // @route   POST /api/tasks
@@ -9,15 +10,20 @@ exports.createTask = async (req, res, next) => {
     try {
         const { title, description, status, priority, projectId, assignees, dueDate } = req.body;
 
-        // Verify project membership
+        // Verify project membership and role
         const project = await Project.findById(projectId);
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
 
-        const isMember = project.members.some(m => m.user.toString() === req.user._id.toString());
-        if (!isMember) {
+        const userRole = await getUserRole(projectId, req.user._id);
+        if (!userRole) {
             return res.status(403).json({ message: 'Not authorized to create tasks in this project' });
+        }
+
+        // Check create permission  
+        if (!hasPermission(userRole, 'create')) {
+            return res.status(403).json({ message: 'Your role does not allow creating tasks' });
         }
 
         const task = await Task.create({
@@ -130,16 +136,26 @@ exports.getTasksByProject = async (req, res, next) => {
 // @access  Private
 exports.updateTask = async (req, res, next) => {
     try {
-        const task = await Task.findById(req.params.id);
+        const task = await Task.findById(req.params.id).populate('assignees');
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
 
-        // Verify project membership
+        // Verify project membership and get role
         const project = await Project.findById(task.project);
-        const isMember = project.members.some(m => m.user.toString() === req.user._id.toString());
-        if (!isMember) {
+        const userRole = await getUserRole(task.project.toString(), req.user._id);
+
+        if (!userRole) {
             return res.status(403).json({ message: 'Not authorized to update tasks in this project' });
+        }
+
+        // Check permissions
+        const isAssigned = task.assignees.some(a => a._id.toString() === req.user._id.toString());
+        if (!hasPermission(userRole, 'update', { isAssigned })) {
+            if (userRole === 'Member' && !isAssigned) {
+                return res.status(403).json({ message: 'Members can only update tasks assigned to them' });
+            }
+            return res.status(403).json({ message: 'Your role does not allow updating tasks' });
         }
 
         const updatedTask = await Task.findByIdAndUpdate(
@@ -178,11 +194,17 @@ exports.deleteTask = async (req, res, next) => {
             return res.status(404).json({ message: 'Task not found' });
         }
 
-        // Verify project membership
+        // Verify project membership and get role
         const project = await Project.findById(task.project);
-        const isMember = project.members.some(m => m.user.toString() === req.user._id.toString());
-        if (!isMember) {
+        const userRole = await getUserRole(task.project.toString(), req.user._id);
+
+        if (!userRole) {
             return res.status(403).json({ message: 'Not authorized to delete tasks in this project' });
+        }
+
+        // Only Admin and Owner can delete tasks
+        if (!hasPermission(userRole, 'delete')) {
+            return res.status(403).json({ message: 'Only Admins and Owners can delete tasks' });
         }
 
         await task.deleteOne();

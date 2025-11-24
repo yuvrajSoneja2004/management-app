@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/invitations/:token/accept" element={<ProtectedRoute><AcceptInvitation /></ProtectedRoute>} />
+        <Route path="/invitations/:token/accept" element={<AcceptInvitation />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Dashboard />} />
