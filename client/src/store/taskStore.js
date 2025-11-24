@@ -1,16 +1,19 @@
 import { create } from 'zustand';
 import api from '../api/axios';
+import { fetchFilteredTasks } from '../api/project';
 
 const useTaskStore = create((set, get) => ({
     tasks: [],
+    selectedTasks: [],
+    filters: {},
     isLoading: false,
     error: null,
 
-    fetchTasks: async (projectId) => {
+    fetchTasks: async (projectId, filters = {}) => {
         set({ isLoading: true });
         try {
-            const res = await api.get(`/tasks/project/${projectId}`);
-            set({ tasks: res.data, isLoading: false });
+            const tasks = await fetchFilteredTasks(projectId, filters);
+            set({ tasks, filters, isLoading: false });
         } catch (error) {
             set({ error: error.message, isLoading: false });
         }
@@ -52,6 +55,22 @@ const useTaskStore = create((set, get) => ({
         }
     },
 
+    // Selection management
+    toggleTaskSelection: (taskId) => set((state) => {
+        const isSelected = state.selectedTasks.includes(taskId);
+        return {
+            selectedTasks: isSelected
+                ? state.selectedTasks.filter(id => id !== taskId)
+                : [...state.selectedTasks, taskId]
+        };
+    }),
+
+    selectAllTasks: () => set((state) => ({
+        selectedTasks: state.tasks.map(t => t._id)
+    })),
+
+    clearSelection: () => set({ selectedTasks: [] }),
+
     // Real-time state updaters
     addTask: (task) => set((state) => ({ tasks: [task, ...state.tasks] })),
 
@@ -61,6 +80,7 @@ const useTaskStore = create((set, get) => ({
 
     removeTask: (taskId) => set((state) => ({
         tasks: state.tasks.filter((t) => t._id !== taskId),
+        selectedTasks: state.selectedTasks.filter(id => id !== taskId)
     })),
 }));
 
