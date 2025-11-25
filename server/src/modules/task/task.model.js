@@ -33,9 +33,9 @@ const taskSchema = new mongoose.Schema({
         type: Date
     },
     attachments: [{
-        name: String,
-        url: String,
-        type: String
+        name: { type: String },
+        url: { type: String },
+        type: { type: String }
     }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

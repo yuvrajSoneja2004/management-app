@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import api from '../api/axios';
 import { Loader2, Upload } from 'lucide-react';
+import { toast } from 'sonner';
 
 const FileUpload = ({ taskId, onUploadComplete }) => {
     const [file, setFile] = useState(null);
@@ -29,9 +30,11 @@ const FileUpload = ({ taskId, onUploadComplete }) => {
                 },
             });
             setFile(null);
+            toast.success('File uploaded successfully');
             if (onUploadComplete) onUploadComplete(res.data);
         } catch (error) {
             console.error('Upload failed:', error);
+            toast.error(error.response?.data?.message || 'Failed to upload file');
         } finally {
             setUploading(false);
         }

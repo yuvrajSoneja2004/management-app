@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, ArrowLeft, Paperclip, FileText, Activity as ActivityIcon, Users } from 'lucide-react';
+import { Plus, ArrowLeft, Paperclip, FileText, Activity as ActivityIcon, Users, Loader2 } from 'lucide-react';
 import FileUpload from '../components/FileUpload';
 import InviteMemberDialog from '../components/InviteMemberDialog';
 import InvitationsList from '../components/InvitationsList';
@@ -44,6 +44,7 @@ const ProjectBoard = () => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showMyTasks, setShowMyTasks] = useState(false);
     const [filters, setFilters] = useState({});
+    const [isCreatingTask, setIsCreatingTask] = useState(false);
     const [newTask, setNewTask] = useState({
         title: '',
         description: '',
@@ -114,18 +115,25 @@ const ProjectBoard = () => {
             toast.error("Permission Denied", { description: "Viewers cannot create tasks." });
             return;
         }
-        await createTask({ ...newTask, projectId: id });
-        setIsDialogOpen(false);
-        setNewTask({
-            title: '',
-            description: '',
-            status: 'Todo',
-            priority: 'Medium',
-            projectId: id,
-            assignees: [],
-            dueDate: ''
-        });
-        toast.success("Task created successfully");
+        setIsCreatingTask(true);
+        try {
+            await createTask({ ...newTask, projectId: id });
+            setIsDialogOpen(false);
+            setNewTask({
+                title: '',
+                description: '',
+                status: 'Todo',
+                priority: 'Medium',
+                projectId: id,
+                assignees: [],
+                dueDate: ''
+            });
+            toast.success("Task created successfully");
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create task");
+        } finally {
+            setIsCreatingTask(false);
+        }
     };
 
     const handleStatusChange = async (taskId, newStatus) => {
@@ -311,7 +319,16 @@ const ProjectBoard = () => {
                                             </div>
                                         </div>
                                         <DialogFooter>
-                                            <Button type="submit">Create Task</Button>
+                                            <Button type="submit" disabled={isCreatingTask}>
+                                                {isCreatingTask ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Creating...
+                                                    </>
+                                                ) : (
+                                                    'Create Task'
+                                                )}
+                                            </Button>
                                         </DialogFooter>
                                     </form>
                                 </DialogContent>
@@ -477,7 +494,9 @@ const ProjectBoard = () => {
                         </div>
 
                         <div className="border-t pt-4">
-                            {!isViewer && <FileUpload taskId={selectedTask?._id} />}
+                            {!isViewer && <FileUpload taskId={selectedTask?._id} onUploadComplete={(updatedTask) => {
+                                setSelectedTask(updatedTask);
+                            }} />}
                             {isViewer && <p className="text-sm text-gray-500 italic text-center">Viewers cannot upload files.</p>}
                         </div>
                     </div>

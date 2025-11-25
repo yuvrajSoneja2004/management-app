@@ -16,9 +16,7 @@ const initAzureStorage = async () => {
         containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 
         // Create container if it doesn't exist
-        await containerClient.createIfNotExists({
-            access: 'blob' // Public read access for blobs
-        });
+        await containerClient.createIfNotExists();
 
         console.log('Azure Storage initialized');
     } catch (error) {
