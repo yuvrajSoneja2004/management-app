@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetProjectsQuery, useCreateProjectMutation } from '@/store/api/projectsApi';
 import { useLogoutMutation } from '@/store/api/authApi';
 import useAuthStore from '../store/authStore';
+import { projectSchema } from '@/lib/validationSchemas';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -20,41 +23,39 @@ const Dashboard = () => {
     const [logout] = useLogoutMutation();
     const { user, clearAuth } = useAuthStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
-    const [newProject, setNewProject] = useState({
-        name: '',
-        description: '',
-        startDate: '',
-        endDate: '',
-        tags: ''
-    });
     const navigate = useNavigate();
 
     // Safely access projects with default empty array
     const projects = data?.projects || [];
 
-    const handleCreateProject = async (e) => {
-        e.preventDefault();
-        setIsCreating(true);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset,
+    } = useForm({
+        resolver: zodResolver(projectSchema),
+        defaultValues: {
+            name: '',
+            description: '',
+            startDate: '',
+            endDate: '',
+            tags: '',
+        },
+    });
+
+    const onSubmit = async (data) => {
         try {
             const projectData = {
-                ...newProject,
-                tags: newProject.tags.split(',').map(t => t.trim()).filter(Boolean)
+                ...data,
+                tags: data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
             };
             await createProject(projectData).unwrap();
             toast.success('Project created successfully!');
             setIsDialogOpen(false);
-            setNewProject({
-                name: '',
-                description: '',
-                startDate: '',
-                endDate: '',
-                tags: ''
-            });
+            reset();
         } catch (error) {
             toast.error(error?.data?.error || 'Failed to create project');
-        } finally {
-            setIsCreating(false);
         }
     };
 
@@ -99,20 +100,21 @@ const Dashboard = () => {
                                             Start a new project to collaborate with your team.
                                         </DialogDescription>
                                     </DialogHeader>
-                                    <form onSubmit={handleCreateProject}>
+                                    <form onSubmit={handleSubmit(onSubmit)}>
                                         <div className="grid gap-6 py-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="name" className="text-sm font-medium">
-                                                    Project Name
+                                                    Project Name *
                                                 </Label>
                                                 <Input
                                                     id="name"
                                                     placeholder="My Awesome Project"
-                                                    value={newProject.name}
-                                                    onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                                                    className="h-11 input-focus"
-                                                    required
+                                                    {...register('name')}
+                                                    className={`h-11 input-focus ${errors.name ? 'border-red-500' : ''}`}
                                                 />
+                                                {errors.name && (
+                                                    <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+                                                )}
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="description" className="text-sm font-medium">
@@ -121,10 +123,12 @@ const Dashboard = () => {
                                                 <Textarea
                                                     id="description"
                                                     placeholder="Describe your project..."
-                                                    value={newProject.description}
-                                                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                                                    className="min-h-[100px] resize-none input-focus"
+                                                    {...register('description')}
+                                                    className={`min-h-[100px] resize-none input-focus ${errors.description ? 'border-red-500' : ''}`}
                                                 />
+                                                {errors.description && (
+                                                    <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>
+                                                )}
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
@@ -132,20 +136,24 @@ const Dashboard = () => {
                                                     <Input
                                                         id="startDate"
                                                         type="date"
-                                                        value={newProject.startDate}
-                                                        onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
-                                                        className="h-11 input-focus"
+                                                        {...register('startDate')}
+                                                        className={`h-11 input-focus ${errors.startDate ? 'border-red-500' : ''}`}
                                                     />
+                                                    {errors.startDate && (
+                                                        <p className="text-sm text-red-500 mt-1">{errors.startDate.message}</p>
+                                                    )}
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label htmlFor="endDate" className="text-sm font-medium">End Date</Label>
                                                     <Input
                                                         id="endDate"
                                                         type="date"
-                                                        value={newProject.endDate}
-                                                        onChange={(e) => setNewProject({ ...newProject, endDate: e.target.value })}
-                                                        className="h-11 input-focus"
+                                                        {...register('endDate')}
+                                                        className={`h-11 input-focus ${errors.endDate ? 'border-red-500' : ''}`}
                                                     />
+                                                    {errors.endDate && (
+                                                        <p className="text-sm text-red-500 mt-1">{errors.endDate.message}</p>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
@@ -153,19 +161,21 @@ const Dashboard = () => {
                                                 <Input
                                                     id="tags"
                                                     placeholder="Design, Development, Urgent"
-                                                    value={newProject.tags}
-                                                    onChange={(e) => setNewProject({ ...newProject, tags: e.target.value })}
-                                                    className="h-11 input-focus"
+                                                    {...register('tags')}
+                                                    className={`h-11 input-focus ${errors.tags ? 'border-red-500' : ''}`}
                                                 />
+                                                {errors.tags && (
+                                                    <p className="text-sm text-red-500 mt-1">{errors.tags.message}</p>
+                                                )}
                                             </div>
                                         </div>
                                         <DialogFooter>
                                             <Button
                                                 type="submit"
-                                                disabled={isCreating}
+                                                disabled={isSubmitting}
                                                 className="btn-gradient font-medium"
                                             >
-                                                {isCreating ? (
+                                                {isSubmitting ? (
                                                     <>
                                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                         Creating...

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetProjectQuery } from '@/store/api/projectsApi';
 import { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation } from '@/store/api/tasksApi';
 import useAuthStore from '../store/authStore';
 import useSocket from '@/hooks/useSocket';
 import useRealtimeUpdates from '@/hooks/useRealtimeUpdates';
 import useSocketStore from '@/store/socketStore';
+import { taskSchema } from '@/lib/validationSchemas';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -46,17 +49,24 @@ const ProjectBoard = () => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showStats, setShowStats] = useState(false);
     const [selectedTasks, setSelectedTasks] = useState([]);
-    const [isCreatingTask, setIsCreatingTask] = useState(false);
-    const [newTask, setNewTask] = useState({
-        title: '',
-        description: '',
-        status: 'Todo',
-        priority: 'Medium',
-        projectId: id,
-        assignees: [],
-        dueDate: '',
-        tags: '',
-        estimatedTime: ''
+
+    const {
+        register: registerTask,
+        handleSubmit: handleSubmitTask,
+        formState: { errors: taskErrors, isSubmitting: isCreatingTask },
+        reset: resetTask,
+    } = useForm({
+        resolver: zodResolver(taskSchema),
+        defaultValues: {
+            title: '',
+            description: '',
+            status: 'Todo',
+            priority: 'Medium',
+            assignees: [],
+            dueDate: '',
+            tags: '',
+            estimatedTime: '',
+        },
     });
 
     const currentProject = projectData;
@@ -78,38 +88,24 @@ const ProjectBoard = () => {
         };
     }, [id, joinProject, leaveProject]);
 
-    const handleCreateTask = async (e) => {
-        e.preventDefault();
+    const onSubmitTask = async (data) => {
         if (isViewer) {
             toast.error("Permission Denied", { description: "Viewers cannot create tasks." });
             return;
         }
-        setIsCreatingTask(true);
         try {
             const taskData = {
-                ...newTask,
+                ...data,
                 projectId: id,
-                tags: newTask.tags ? newTask.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
-                estimatedTime: newTask.estimatedTime ? Number(newTask.estimatedTime) : undefined
+                tags: data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+                estimatedTime: data.estimatedTime ? Number(data.estimatedTime) : undefined,
             };
             await createTask(taskData).unwrap();
             setIsDialogOpen(false);
-            setNewTask({
-                title: '',
-                description: '',
-                status: 'Todo',
-                priority: 'Medium',
-                projectId: id,
-                assignees: [],
-                dueDate: '',
-                tags: '',
-                estimatedTime: ''
-            });
+            resetTask();
             toast.success("Task created successfully");
         } catch (error) {
             toast.error(error?.data?.error || "Failed to create task");
-        } finally {
-            setIsCreatingTask(false);
         }
     };
 
@@ -202,33 +198,38 @@ const ProjectBoard = () => {
                                     <DialogHeader>
                                         <DialogTitle>Create Task</DialogTitle>
                                     </DialogHeader>
-                                    <form onSubmit={handleCreateTask}>
+                                    <form onSubmit={handleSubmitTask(onSubmitTask)}>
                                         <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
                                             <div className="grid gap-2">
-                                                <Label htmlFor="title">Title</Label>
+                                                <Label htmlFor="title">Title *</Label>
                                                 <Input
                                                     id="title"
-                                                    value={newTask.title}
-                                                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                                                    required
+                                                    {...registerTask('title')}
+                                                    className={taskErrors.title ? 'border-red-500' : ''}
                                                 />
+                                                {taskErrors.title && (
+                                                    <p className="text-sm text-red-500">{taskErrors.title.message}</p>
+                                                )}
                                             </div>
                                             <div className="grid gap-2">
                                                 <Label htmlFor="description">Description</Label>
                                                 <Textarea
                                                     id="description"
-                                                    value={newTask.description}
-                                                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                                                    {...registerTask('description')}
+                                                    className={taskErrors.description ? 'border-red-500' : ''}
                                                 />
+                                                {taskErrors.description && (
+                                                    <p className="text-sm text-red-500">{taskErrors.description.message}</p>
+                                                )}
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="status">Status</Label>
+                                                    <Label htmlFor="status">Status *</Label>
                                                     <Select
-                                                        value={newTask.status}
-                                                        onValueChange={(value) => setNewTask({ ...newTask, status: value })}
+                                                        defaultValue="Todo"
+                                                        onValueChange={(value) => registerTask('status').onChange({ target: { value, name: 'status' } })}
                                                     >
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className={taskErrors.status ? 'border-red-500' : ''}>
                                                             <SelectValue placeholder="Select status" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -237,14 +238,17 @@ const ProjectBoard = () => {
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
+                                                    {taskErrors.status && (
+                                                        <p className="text-sm text-red-500">{taskErrors.status.message}</p>
+                                                    )}
                                                 </div>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="priority">Priority</Label>
+                                                    <Label htmlFor="priority">Priority *</Label>
                                                     <Select
-                                                        value={newTask.priority}
-                                                        onValueChange={(value) => setNewTask({ ...newTask, priority: value })}
+                                                        defaultValue="Medium"
+                                                        onValueChange={(value) => registerTask('priority').onChange({ target: { value, name: 'priority' } })}
                                                     >
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className={taskErrors.priority ? 'border-red-500' : ''}>
                                                             <SelectValue placeholder="Select priority" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -254,6 +258,9 @@ const ProjectBoard = () => {
                                                             <SelectItem value="Critical">Critical</SelectItem>
                                                         </SelectContent>
                                                     </Select>
+                                                    {taskErrors.priority && (
+                                                        <p className="text-sm text-red-500">{taskErrors.priority.message}</p>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -308,9 +315,9 @@ const ProjectBoard = () => {
                                                                     <CardTitle className="text-sm font-medium truncate">{task.title}</CardTitle>
                                                                     <div className="flex justify-between items-center mt-2 gap-2">
                                                                         <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap ${task.priority === 'Critical' ? 'bg-red-100 text-red-800' :
-                                                                                task.priority === 'High' ? 'bg-orange-100 text-orange-800' :
-                                                                                    task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                                                        'bg-green-100 text-green-800'
+                                                                            task.priority === 'High' ? 'bg-orange-100 text-orange-800' :
+                                                                                task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                                                                    'bg-green-100 text-green-800'
                                                                             }`}>
                                                                             {task.priority}
                                                                         </span>
