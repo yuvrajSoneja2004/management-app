@@ -34,7 +34,8 @@ const useProjectStore = create((set, get) => ({
     },
 
     getProject: async (id) => {
-        set({ isLoading: true });
+        // Clear previous project data immediately to show loading state
+        set({ currentProject: null, userRole: null, isLoading: true });
         try {
             const res = await api.get(`/projects/${id}`);
             const project = res.data;

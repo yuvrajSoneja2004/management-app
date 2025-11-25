@@ -10,7 +10,8 @@ const useTaskStore = create((set, get) => ({
     error: null,
 
     fetchTasks: async (projectId, filters = {}) => {
-        set({ isLoading: true });
+        // Clear previous tasks immediately to show loading state
+        set({ tasks: [], selectedTasks: [], isLoading: true });
         try {
             const tasks = await fetchFilteredTasks(projectId, filters);
             set({ tasks, filters, isLoading: false });
