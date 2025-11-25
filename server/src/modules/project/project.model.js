@@ -10,6 +10,16 @@ const projectSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    startDate: {
+        type: Date
+    },
+    endDate: {
+        type: Date
+    },
+    tags: [{
+        type: String,
+        trim: true
+    }],
     status: {
         type: String,
         enum: ['Active', 'Archived'],
@@ -34,6 +44,10 @@ const projectSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+// Indexes for performance
+projectSchema.index({ owner: 1 });
+projectSchema.index({ owner: 1, status: 1 });
 
 const Project = mongoose.model('Project', projectSchema);
 

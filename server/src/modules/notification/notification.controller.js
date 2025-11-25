@@ -1,24 +1,15 @@
-const Notification = require('./notification.model');
+const notificationService = require('./notification.service');
 
-// @desc    Create a notification
-// @route   POST /api/notifications
-// @access  Private
+/**
+ * Notification Controller
+ * Handles HTTP requests/responses ONLY
+ * All business logic delegated to notification.service.js
+ */
+
+// @desc    Create a notification (used internally by other modules)
+// @access  Internal
 exports.createNotification = async (userId, type, message, projectId, taskId = null, fromUserId = null) => {
-    try {
-        const notification = await Notification.create({
-            user: userId,
-            type,
-            message,
-            project: projectId,
-            task: taskId,
-            from: fromUserId
-        });
-
-        return notification;
-    } catch (error) {
-        console.error('Error creating notification:', error);
-        throw error;
-    }
+    return await notificationService.createNotification(userId, type, message, projectId, taskId, fromUserId);
 };
 
 // @desc    Get user notifications
@@ -26,19 +17,15 @@ exports.createNotification = async (userId, type, message, projectId, taskId = n
 // @access  Private
 exports.getNotifications = async (req, res, next) => {
     try {
-        const notifications = await Notification.find({ user: req.user._id })
-            .populate('from', 'username email')
-            .populate('project', 'name')
-            .populate('task', 'title')
-            .sort({ createdAt: -1 })
-            .limit(50);
+        const options = {
+            limit: parseInt(req.query.limit) || 50,
+            skip: parseInt(req.query.skip) || 0,
+            unreadOnly: req.query.unreadOnly === 'true'
+        };
 
-        const unreadCount = await Notification.countDocuments({
-            user: req.user._id,
-            read: false
-        });
+        const result = await notificationService.getUserNotifications(req.user._id, options);
 
-        res.json({ notifications, unreadCount });
+        res.json(result);
     } catch (error) {
         next(error);
     }
@@ -49,18 +36,13 @@ exports.getNotifications = async (req, res, next) => {
 // @access  Private
 exports.markAsRead = async (req, res, next) => {
     try {
-        const notification = await Notification.findOneAndUpdate(
-            { _id: req.params.id, user: req.user._id },
-            { read: true },
-            { new: true }
-        );
-
-        if (!notification) {
-            return res.status(404).json({ message: 'Notification not found' });
-        }
+        const notification = await notificationService.markAsRead(req.params.id, req.user._id);
 
         res.json(notification);
     } catch (error) {
+        if (error.message === 'Notification not found or unauthorized') {
+            return res.status(404).json({ message: error.message });
+        }
         next(error);
     }
 };
@@ -70,12 +52,9 @@ exports.markAsRead = async (req, res, next) => {
 // @access  Private
 exports.markAllAsRead = async (req, res, next) => {
     try {
-        await Notification.updateMany(
-            { user: req.user._id, read: false },
-            { read: true }
-        );
+        const result = await notificationService.markAllAsRead(req.user._id);
 
-        res.json({ message: 'All notifications marked as read' });
+        res.json(result);
     } catch (error) {
         next(error);
     }
@@ -86,17 +65,13 @@ exports.markAllAsRead = async (req, res, next) => {
 // @access  Private
 exports.deleteNotification = async (req, res, next) => {
     try {
-        const notification = await Notification.findOneAndDelete({
-            _id: req.params.id,
-            user: req.user._id
-        });
+        const result = await notificationService.deleteNotification(req.params.id, req.user._id);
 
-        if (!notification) {
-            return res.status(404).json({ message: 'Notification not found' });
-        }
-
-        res.json({ message: 'Notification deleted' });
+        res.json(result);
     } catch (error) {
+        if (error.message === 'Notification not found or unauthorized') {
+            return res.status(404).json({ message: error.message });
+        }
         next(error);
     }
 };

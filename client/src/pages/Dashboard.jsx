@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../store/projectStore';
+import { useGetProjectsQuery, useCreateProjectMutation } from '@/store/api/projectsApi';
+import { useLogoutMutation } from '@/store/api/authApi';
 import useAuthStore from '../store/authStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,35 +11,63 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, LogOut, FolderKanban, Users, CheckCircle2, Clock, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
+import ProjectCardSkeleton from '@/components/skeletons/ProjectCardSkeleton';
 
 const Dashboard = () => {
-    const { projects, fetchProjects, createProject, isLoading } = useProjectStore();
-    const { user, logout } = useAuthStore();
+    const { data, isLoading, error } = useGetProjectsQuery({ page: 1, limit: 20 });
+    const [createProject] = useCreateProjectMutation();
+    const [logout] = useLogoutMutation();
+    const { user, clearAuth } = useAuthStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
-    const [newProject, setNewProject] = useState({ name: '', description: '' });
+    const [newProject, setNewProject] = useState({
+        name: '',
+        description: '',
+        startDate: '',
+        endDate: '',
+        tags: ''
+    });
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchProjects();
-    }, [fetchProjects]);
+    // Safely access projects with default empty array
+    const projects = data?.projects || [];
 
     const handleCreateProject = async (e) => {
         e.preventDefault();
         setIsCreating(true);
         try {
-            await createProject(newProject);
+            const projectData = {
+                ...newProject,
+                tags: newProject.tags.split(',').map(t => t.trim()).filter(Boolean)
+            };
+            await createProject(projectData).unwrap();
+            toast.success('Project created successfully!');
             setIsDialogOpen(false);
-            setNewProject({ name: '', description: '' });
+            setNewProject({
+                name: '',
+                description: '',
+                startDate: '',
+                endDate: '',
+                tags: ''
+            });
+        } catch (error) {
+            toast.error(error?.data?.error || 'Failed to create project');
         } finally {
             setIsCreating(false);
         }
     };
 
-    // Calculate stats
-    const activeProjects = projects.filter(p => p.status === 'Active').length;
-    const completedProjects = projects.filter(p => p.status === 'Completed').length;
-    const totalMembers = new Set(projects.flatMap(p => p.members.map(m => m.user?._id || m.user))).size;
+    const handleLogout = async () => {
+        try {
+            await logout().unwrap();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            clearAuth();
+            navigate('/login');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background">
@@ -97,6 +126,38 @@ const Dashboard = () => {
                                                     className="min-h-[100px] resize-none input-focus"
                                                 />
                                             </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
+                                                    <Input
+                                                        id="startDate"
+                                                        type="date"
+                                                        value={newProject.startDate}
+                                                        onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
+                                                        className="h-11 input-focus"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="endDate" className="text-sm font-medium">End Date</Label>
+                                                    <Input
+                                                        id="endDate"
+                                                        type="date"
+                                                        value={newProject.endDate}
+                                                        onChange={(e) => setNewProject({ ...newProject, endDate: e.target.value })}
+                                                        className="h-11 input-focus"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="tags" className="text-sm font-medium">Tags (comma separated)</Label>
+                                                <Input
+                                                    id="tags"
+                                                    placeholder="Design, Development, Urgent"
+                                                    value={newProject.tags}
+                                                    onChange={(e) => setNewProject({ ...newProject, tags: e.target.value })}
+                                                    className="h-11 input-focus"
+                                                />
+                                            </div>
                                         </div>
                                         <DialogFooter>
                                             <Button
@@ -120,7 +181,7 @@ const Dashboard = () => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={logout}
+                                onClick={handleLogout}
                                 className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
                             >
                                 <LogOut className="h-4 w-4 mr-2" />
@@ -142,7 +203,7 @@ const Dashboard = () => {
                             <FolderKanban className="h-4 w-4 text-blue-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{projects.length}</div>
+                            <div className="text-3xl font-bold">{projects?.length || 0}</div>
                         </CardContent>
                     </Card>
 
@@ -154,7 +215,9 @@ const Dashboard = () => {
                             <Clock className="h-4 w-4 text-amber-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{activeProjects}</div>
+                            <div className="text-3xl font-bold">
+                                {projects?.filter(p => p.status === 'Active').length || 0}
+                            </div>
                         </CardContent>
                     </Card>
 
@@ -166,7 +229,9 @@ const Dashboard = () => {
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{completedProjects}</div>
+                            <div className="text-3xl font-bold">
+                                {projects?.filter(p => p.status === 'Completed').length || 0}
+                            </div>
                         </CardContent>
                     </Card>
 
@@ -178,54 +243,31 @@ const Dashboard = () => {
                             <Users className="h-4 w-4 text-purple-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{totalMembers}</div>
+                            <div className="text-3xl font-bold">
+                                {new Set(
+                                    (projects || [])
+                                        .filter(p => p.members && Array.isArray(p.members))
+                                        .flatMap(p => p.members.map(m => m.user?._id || m.user))
+                                        .filter(Boolean)
+                                ).size}
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* Projects Grid */}
-                {isLoading && projects.length === 0 ? (
+                {isLoading ? (
                     <div className="space-y-8 animate-fade-in">
-                        {/* Skeleton Stats Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {[1, 2, 3, 4].map((i) => (
-                                <Card key={i} className="border-0 shadow-soft">
-                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                        <Skeleton className="h-4 w-24" />
-                                        <Skeleton className="h-4 w-4 rounded" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Skeleton className="h-8 w-16" />
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-
                         {/* Skeleton Project Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[1, 2, 3, 4, 5, 6].map((i) => (
-                                <Card key={i} className="border-0 shadow-soft">
-                                    <CardHeader>
-                                        <Skeleton className="h-6 w-3/4 mb-2" />
-                                        <Skeleton className="h-4 w-full" />
-                                        <Skeleton className="h-4 w-2/3" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex items-center justify-between">
-                                            <Skeleton className="h-6 w-20 rounded-full" />
-                                            <Skeleton className="h-4 w-12" />
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter className="pt-0">
-                                        <Skeleton className="h-9 w-full" />
-                                    </CardFooter>
-                                </Card>
+                                <ProjectCardSkeleton key={i} />
                             ))}
                         </div>
                     </div>
                 ) : (
                     <>
-                        {projects.length === 0 ? (
+                        {(projects?.length === 0 || !projects) ? (
                             <div className="text-center py-20 animate-fade-in">
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/20 mb-4">
                                     <FolderKanban className="h-8 w-8 text-blue-500" />
@@ -241,7 +283,7 @@ const Dashboard = () => {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                                {projects.map((project) => (
+                                {projects?.map((project) => (
                                     <Card
                                         key={project._id}
                                         className="card-hover border-0 shadow-soft cursor-pointer group"
@@ -256,6 +298,18 @@ const Dashboard = () => {
                                                     <CardDescription className="line-clamp-2">
                                                         {project.description || 'No description'}
                                                     </CardDescription>
+                                                    <div className="flex flex-wrap gap-1 mt-2">
+                                                        {project.tags?.map((tag, idx) => (
+                                                            <span key={idx} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full dark:bg-blue-900/20 dark:text-blue-400">
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    {project.startDate && project.endDate && (
+                                                        <p className="text-xs text-muted-foreground mt-1">
+                                                            {new Date(project.startDate).toLocaleDateString()} - {new Date(project.endDate).toLocaleDateString()}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
                                         </CardHeader>
@@ -275,7 +329,7 @@ const Dashboard = () => {
                                                 </div>
                                                 <div className="flex items-center gap-1 text-muted-foreground">
                                                     <Users className="h-4 w-4" />
-                                                    <span className="font-medium">{project.members.length}</span>
+                                                    <span className="font-medium">{project.members?.length || 0}</span>
                                                 </div>
                                             </div>
                                         </CardContent>

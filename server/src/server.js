@@ -3,6 +3,9 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./app');
 const connectDB = require('./config/db');
+const logger = require('./config/logger');
+const socketAuthMiddleware = require('./middleware/socket.middleware');
+const { initializeSocketHandlers } = require('./socket/socket.handlers');
 
 const PORT = process.env.PORT || 5000;
 
@@ -11,36 +14,45 @@ connectDB();
 
 const server = http.createServer(app);
 
+// Initialize Socket.io with authentication
 const io = new Server(server, {
     cors: {
         origin: process.env.CLIENT_URL || 'http://localhost:5173',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true
-    }
+    },
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
-io.on('connection', (socket) => {
-    console.log('New client connected:', socket.id);
+// Apply authentication middleware
+io.use(socketAuthMiddleware);
 
-    socket.on('joinProject', (projectId) => {
-        socket.join(projectId);
-        console.log(`Socket ${socket.id} joined project ${projectId}`);
-    });
+// Initialize event handlers
+initializeSocketHandlers(io);
 
-    socket.on('leaveProject', (projectId) => {
-        socket.leave(projectId);
-        console.log(`Socket ${socket.id} left project ${projectId}`);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Client disconnected:', socket.id);
-    });
-});
-
-// Make io accessible to our router
+// Make io accessible to routes
 app.set('io', io);
 
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    logger.info('SIGTERM signal received: closing HTTP server');
+    server.close(() => {
+        logger.info('HTTP server closed');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    logger.info('SIGINT signal received: closing HTTP server');
+    server.close(() => {
+        logger.info('HTTP server closed');
+        process.exit(0);
+    });
+});
+
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log('Backend server started');
+    logger.info(`Server running on port ${PORT}`);
+    logger.info('Backend server started');
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });

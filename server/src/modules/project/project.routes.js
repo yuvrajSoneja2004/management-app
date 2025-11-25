@@ -2,27 +2,35 @@ const express = require('express');
 const { createProject, getProjects, getProjectById, updateProject, deleteProject, addMember, inviteMember, acceptInvitation, getProjectInvitations, cancelInvitation, getProjectActivities } = require('./project.controller');
 const { protect } = require('../../middleware/auth.middleware');
 const { checkRole } = require('../../middleware/rbac.middleware');
+const {
+    validateCreateProject,
+    validateUpdateProject,
+    validateProjectId,
+    validateAddMember,
+    validateInviteMember,
+    validatePagination
+} = require('../../middleware/validation.middleware');
 
 const router = express.Router();
 
 router.use(protect);
 
 router.route('/')
-    .get(getProjects)
-    .post(createProject);
+    .get(validatePagination, getProjects)
+    .post(validateCreateProject, createProject);
 
 router.route('/:id')
-    .get(getProjectById) // All members can view
-    .put(checkRole(['Admin', 'Owner']), updateProject) // Only Admin/Owner can update
-    .delete(deleteProject); // Only Owner (handled in controller)
+    .get(validateProjectId, getProjectById)
+    .put(validateProjectId, checkRole(['Admin', 'Owner']), validateUpdateProject, updateProject)
+    .delete(validateProjectId, deleteProject);
 
-router.post('/:id/members', checkRole(['Admin', 'Owner']), addMember);
+router.post('/:id/members', validateAddMember, checkRole(['Admin', 'Owner']), addMember);
 
 // Invitation routes
-router.post('/:id/invite', inviteMember); // Controller checks Admin/Owner
+router.post('/:id/invite', validateInviteMember, inviteMember);
 router.post('/invitations/:token/accept', acceptInvitation);
-router.get('/:id/invitations', getProjectInvitations); // Controller checks Admin/Owner  
-router.delete('/invitations/:id', cancelInvitation); // Controller checks Admin/Owner
-router.get('/:id/activities', getProjectActivities); // Get activity log
+router.get('/:id/invitations', validateProjectId, getProjectInvitations);
+router.delete('/invitations/:id', cancelInvitation);
+router.get('/:id/activities', validateProjectId, validatePagination, getProjectActivities);
 
 module.exports = router;

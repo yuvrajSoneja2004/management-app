@@ -1,33 +1,40 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useRegisterMutation } from '@/store/api/authApi';
 import useAuthStore from '../store/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Register = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { register, isLoading, error } = useAuthStore();
+    const [register, { isLoading }] = useRegisterMutation();
+    const { setAuth, isAuthenticated } = useAuthStore();
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        if (useAuthStore.getState().isAuthenticated) {
+        if (isAuthenticated) {
             const from = location.state?.from || '/';
             navigate(from, { replace: true });
         }
-    }, [navigate, location]);
+    }, [isAuthenticated, navigate, location]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await register(username, email, password);
-        if (useAuthStore.getState().isAuthenticated) {
+        try {
+            const result = await register({ username, email, password }).unwrap();
+            setAuth(result, result.accessToken);
+            toast.success('Account created successfully!');
             const from = location.state?.from || '/';
             navigate(from, { replace: true });
+        } catch (error) {
+            toast.error(error?.data?.error || 'Registration failed. Please try again.');
         }
     };
 
@@ -106,12 +113,6 @@ const Register = () => {
                                         />
                                     </div>
                                 </div>
-
-                                {error && (
-                                    <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                                        <p className="text-sm text-destructive font-medium">{error}</p>
-                                    </div>
-                                )}
 
                                 <Button
                                     type="submit"

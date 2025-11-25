@@ -58,6 +58,16 @@ const useProjectStore = create((set, get) => ({
             set({ error: error.message, isLoading: false });
         }
     },
+
+    projectStats: null,
+    fetchProjectStats: async (projectId) => {
+        try {
+            const res = await api.get(`/projects/${projectId}/statistics`);
+            set({ projectStats: res.data });
+        } catch (error) {
+            console.error('Failed to fetch project stats', error);
+        }
+    },
 }));
 
 export default useProjectStore;

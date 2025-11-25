@@ -1,30 +1,38 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from "@/components/ui/sonner";
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingFallback from './components/LoadingFallback';
+import ProtectedRoute from './components/ProtectedRoute';
 
-import Dashboard from './pages/Dashboard';
-import ProjectBoard from './pages/ProjectBoard';
-import AcceptInvitation from './pages/AcceptInvitation';
+// Lazy load route components for code splitting
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ProjectBoard = lazy(() => import('./pages/ProjectBoard'));
+const AcceptInvitation = lazy(() => import('./pages/AcceptInvitation'));
 
 function App() {
   return (
-    <Router>
-      <Toaster position="top-center" richColors />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/invitations/:token/accept" element={<AcceptInvitation />} />
+    <ErrorBoundary>
+      <Router>
+        <Toaster position="top-center" richColors />
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/invitations/:token/accept" element={<AcceptInvitation />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/projects/:id" element={<ProjectBoard />} />
-        </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/projects/:id" element={<ProjectBoard />} />
+            </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

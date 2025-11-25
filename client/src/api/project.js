@@ -29,6 +29,11 @@ export const getProjectActivities = async (projectId, page = 1, limit = 20) => {
     return res.data;
 };
 
+export const getProjectStatistics = async (projectId) => {
+    const res = await api.get(`/projects/${projectId}/statistics`);
+    return res.data;
+};
+
 // Enhanced Task Functions
 export const fetchFilteredTasks = async (projectId, filters = {}) => {
     const params = {};

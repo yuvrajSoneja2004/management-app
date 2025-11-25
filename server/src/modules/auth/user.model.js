@@ -27,10 +27,25 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordExpires: {
         type: Date
+    },
+    lastLogin: {
+        type: Date
+    },
+    status: {
+        type: String,
+        enum: ['Active', 'Inactive', 'Suspended'],
+        default: 'Active'
+    },
+    avatar: {
+        type: String
     }
 }, {
     timestamps: true
 });
+
+// Indexes for performance
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ username: 1 }, { unique: true });
 
 // Hash password before saving
 userSchema.pre('save', async function () {

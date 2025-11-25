@@ -1,32 +1,39 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useLoginMutation } from '@/store/api/authApi';
 import useAuthStore from '../store/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Mail, Lock, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login, isLoading, error } = useAuthStore();
+    const [login, { isLoading }] = useLoginMutation();
+    const { setAuth, isAuthenticated } = useAuthStore();
     const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
-        if (useAuthStore.getState().isAuthenticated) {
+        if (isAuthenticated) {
             const from = location.state?.from || '/';
             navigate(from, { replace: true });
         }
-    }, [navigate, location]);
+    }, [isAuthenticated, navigate, location]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await login(email, password);
-        if (useAuthStore.getState().isAuthenticated) {
+        try {
+            const result = await login({ email, password }).unwrap();
+            setAuth(result, result.accessToken);
+            toast.success('Login successful!');
             const from = location.state?.from || '/';
             navigate(from, { replace: true });
+        } catch (error) {
+            toast.error(error?.data?.error || 'Login failed. Please check your credentials.');
         }
     };
 
@@ -88,12 +95,6 @@ const Login = () => {
                                         />
                                     </div>
                                 </div>
-
-                                {error && (
-                                    <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                                        <p className="text-sm text-destructive font-medium">{error}</p>
-                                    </div>
-                                )}
 
                                 <Button
                                     type="submit"

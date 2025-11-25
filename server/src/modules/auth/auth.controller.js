@@ -1,22 +1,10 @@
-const User = require('./user.model');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const { sendPasswordResetEmail } = require('../../utils/emailService');
-const bcrypt = require('bcryptjs');
+const authService = require('./auth.service');
 
-// Generate Access Token
-const generateAccessToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '15m'
-    });
-};
-
-// Generate Refresh Token
-const generateRefreshToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
-        expiresIn: '7d'
-    });
-};
+/**
+ * Auth Controller
+ * Handles HTTP requests/responses ONLY
+ * All business logic delegated to auth.service.js
+ */
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -25,43 +13,26 @@ exports.registerUser = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
 
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
+        const result = await authService.registerUser(username, email, password);
 
-        const user = await User.create({
-            username,
-            email,
-            password
+        // Send refresh token in HTTP-only cookie
+        res.cookie('jwt', result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
-        if (user) {
-            const accessToken = generateAccessToken(user._id);
-            const refreshToken = generateRefreshToken(user._id);
-
-            // Save refresh token to DB
-            user.refreshToken = refreshToken;
-            await user.save();
-
-            // Send refresh token in HTTP-only cookie
-            res.cookie('jwt', refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-            });
-
-            res.status(201).json({
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                accessToken
-            });
-        } else {
-            res.status(400).json({ message: 'Invalid user data' });
-        }
+        res.status(201).json({
+            _id: result.user._id,
+            username: result.user.username,
+            email: result.user.email,
+            accessToken: result.accessToken
+        });
     } catch (error) {
+        if (error.message === 'User already exists') {
+            return res.status(400).json({ message: error.message });
+        }
         next(error);
     }
 };
@@ -73,32 +44,26 @@ exports.loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email }).select('+password');
+        const result = await authService.loginUser(email, password);
 
-        if (user && (await user.matchPassword(password))) {
-            const accessToken = generateAccessToken(user._id);
-            const refreshToken = generateRefreshToken(user._id);
+        // Send refresh token in HTTP-only cookie
+        res.cookie('jwt', result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
 
-            user.refreshToken = refreshToken;
-            await user.save();
-
-            res.cookie('jwt', refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            });
-
-            res.json({
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                accessToken
-            });
-        } else {
-            res.status(401).json({ message: 'Invalid email or password' });
-        }
+        res.json({
+            _id: result.user._id,
+            username: result.user.username,
+            email: result.user.email,
+            accessToken: result.accessToken
+        });
     } catch (error) {
+        if (error.message === 'Invalid email or password') {
+            return res.status(401).json({ message: error.message });
+        }
         next(error);
     }
 };
@@ -109,21 +74,16 @@ exports.loginUser = async (req, res, next) => {
 exports.logoutUser = async (req, res, next) => {
     try {
         const refreshToken = req.cookies.jwt;
-        if (!refreshToken) return res.sendStatus(204);
 
-        // Is refresh token in db?
-        const user = await User.findOne({ refreshToken });
-        if (user) {
-            user.refreshToken = '';
-            await user.save();
-        }
+        const result = await authService.logoutUser(refreshToken);
 
         res.clearCookie('jwt', {
             httpOnly: true,
             sameSite: 'strict',
             secure: process.env.NODE_ENV === 'production'
         });
-        res.status(200).json({ message: 'Logged out successfully' });
+
+        res.status(200).json(result);
     } catch (error) {
         next(error);
     }
@@ -134,25 +94,18 @@ exports.logoutUser = async (req, res, next) => {
 // @access  Public
 exports.refresh = async (req, res, next) => {
     try {
-        const cookies = req.cookies;
-        if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' });
+        const refreshToken = req.cookies?.jwt;
 
-        const refreshToken = cookies.jwt;
-        const user = await User.findOne({ refreshToken });
+        const accessToken = await authService.refreshAccessToken(refreshToken);
 
-        if (!user) return res.status(403).json({ message: 'Forbidden' });
-
-        jwt.verify(
-            refreshToken,
-            process.env.JWT_REFRESH_SECRET,
-            (err, decoded) => {
-                if (err || user._id.toString() !== decoded.id) return res.status(403).json({ message: 'Forbidden' });
-
-                const accessToken = generateAccessToken(user._id);
-                res.json({ accessToken });
-            }
-        );
+        res.json({ accessToken });
     } catch (error) {
+        if (error.message === 'Unauthorized') {
+            return res.status(401).json({ message: error.message });
+        }
+        if (error.message === 'Forbidden') {
+            return res.status(403).json({ message: error.message });
+        }
         next(error);
     }
 };
@@ -164,24 +117,9 @@ exports.forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
 
-        const user = await User.findOne({ email });
-        if (!user) {
-            // Don't reveal if user exists for security
-            return res.json({ message: 'If that email exists, a reset link has been sent' });
-        }
+        const result = await authService.forgotPassword(email);
 
-        // Generate reset token
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-
-        await user.save();
-
-        // Send email
-        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-        await sendPasswordResetEmail(user.email, user.username, resetUrl);
-
-        res.json({ message: 'Password reset email sent' });
+        res.json(result);
     } catch (error) {
         console.error('Forgot password error:', error);
         next(error);
@@ -196,30 +134,23 @@ exports.resetPassword = async (req, res, next) => {
         const { token } = req.params;
         const { password } = req.body;
 
-        if (!password || password.length < 6) {
-            return res.status(400).json({ message: 'Password must be at least 6 characters' });
-        }
+        const result = await authService.resetPassword(token, password);
 
-        // Hash token to compare
-        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
-        const user = await User.findOne({
-            resetPasswordToken: hashedToken,
-            resetPasswordExpires: { $gt: Date.now() }
-        }).select('+password');
-
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired reset token' });
-        }
-
-        // Update password
-        user.password = password;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
-        await user.save();
-
-        res.json({ message: 'Password reset successful' });
+        res.json(result);
     } catch (error) {
+        if (error.message === 'Password must be at least 6 characters' ||
+            error.message === 'Invalid or expired reset token') {
+            return res.status(400).json({ message: error.message });
+        }
         next(error);
     }
+};
+
+module.exports = {
+    registerUser: exports.registerUser,
+    loginUser: exports.loginUser,
+    logoutUser: exports.logoutUser,
+    refresh: exports.refresh,
+    forgotPassword: exports.forgotPassword,
+    resetPassword: exports.resetPassword
 };

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import useAuthStore from '../store/authStore';
+import { toast } from 'sonner';
 
 const api = axios.create({
     baseURL: 'http://localhost:5000/api',
@@ -44,6 +45,13 @@ api.interceptors.response.use(
                 window.location.href = '/login';
                 return Promise.reject(refreshError);
             }
+        }
+
+        // Global error handling
+        const message = error.response?.data?.message || error.message || 'An unexpected error occurred';
+        // Avoid showing toast for 401s as they are handled by refresh logic or redirection
+        if (error.response?.status !== 401) {
+            toast.error(message);
         }
 
         return Promise.reject(error);

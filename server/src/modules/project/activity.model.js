@@ -24,7 +24,8 @@ const activitySchema = new mongoose.Schema({
             'project_updated',
             'project_created',
             'invitation_sent',
-            'invitation_accepted'
+            'invitation_accepted',
+            'project_deleted'
         ]
     },
     metadata: {
