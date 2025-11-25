@@ -82,7 +82,7 @@ class TaskService {
         }
 
         // Invalidate task cache for this project
-        cacheService.deletePattern(`tasks:project:${projectId}:*`);
+        await cacheService.deletePattern(`tasks:project:${projectId}:*`);
 
         return populatedTask;
     }
@@ -142,13 +142,15 @@ class TaskService {
         }
 
         // Pagination
+        const maxLimit = 100;
+        const limit = Math.min(parseInt(queryParams.limit) || 50, maxLimit);
         const page = parseInt(queryParams.page) || 1;
-        const limit = parseInt(queryParams.limit) || 50;
 
         // Check cache
         const cacheKey = `tasks:project:${projectId}:page:${page}:limit:${limit}:${JSON.stringify(filters)}:${JSON.stringify(sortBy)}`;
-        if (cacheService.has(cacheKey)) {
-            return cacheService.get(cacheKey);
+        const cached = await cacheService.get(cacheKey);
+        if (cached) {
+            return cached;
         }
 
         // Fetch from database
@@ -166,7 +168,7 @@ class TaskService {
         };
 
         // Cache for 2 minutes
-        cacheService.set(cacheKey, result, 2 * 60 * 1000);
+        await cacheService.set(cacheKey, result, 2 * 60 * 1000);
 
         return result;
     }
@@ -257,7 +259,7 @@ class TaskService {
         }
 
         // Invalidate task cache for this project
-        cacheService.deletePattern(`tasks:project:${task.project._id}:*`);
+        await cacheService.deletePattern(`tasks:project:${task.project._id}:*`);
 
         return populatedTask;
     }
@@ -300,7 +302,7 @@ class TaskService {
         }
 
         // Invalidate task cache for this project
-        cacheService.deletePattern(`tasks:project:${task.project}:*`);
+        await cacheService.deletePattern(`tasks:project:${task.project}:*`);
 
         return { message: 'Task removed', taskId };
     }
@@ -344,7 +346,7 @@ class TaskService {
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
             // Invalidate cache for each affected project
-            cacheService.deletePattern(`tasks:project:${projectId}:*`);
+            await cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
 
         return { message: `${taskIds.length} tasks updated successfully`, updatedCount: taskIds.length };
@@ -389,7 +391,7 @@ class TaskService {
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
             // Invalidate cache for each affected project
-            cacheService.deletePattern(`tasks:project:${projectId}:*`);
+            await cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
 
         return { message: `${taskIds.length} tasks assigned successfully`, updatedCount: taskIds.length };
@@ -434,7 +436,7 @@ class TaskService {
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
             // Invalidate cache for each affected project
-            cacheService.deletePattern(`tasks:project:${projectId}:*`);
+            await cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
 
         return { message: `${taskIds.length} tasks deleted successfully`, deletedCount: taskIds.length };

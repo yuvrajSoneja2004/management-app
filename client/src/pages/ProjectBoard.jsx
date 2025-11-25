@@ -26,6 +26,7 @@ import TaskFilters from '../components/TaskFilters';
 import BulkActions from '../components/BulkActions';
 import ProjectStatistics from '../components/ProjectStatistics';
 import TaskCardSkeleton from '@/components/skeletons/TaskCardSkeleton';
+import KanbanBoard from '../components/KanbanBoard';
 import { toast } from 'sonner';
 
 const ProjectBoard = () => {
@@ -35,7 +36,6 @@ const ProjectBoard = () => {
 
     // RTK Query hooks
     const { data: projectData, isLoading: isLoadingProject } = useGetProjectQuery(id);
-    const { data: tasksData, isLoading: isLoadingTasks } = useGetTasksQuery({ projectId: id, page: 1, limit: 100 });
     const [createTask] = useCreateTaskMutation();
     const [updateTask] = useUpdateTaskMutation();
 
@@ -70,8 +70,7 @@ const ProjectBoard = () => {
     });
 
     const currentProject = projectData;
-    const tasks = tasksData?.tasks || [];
-    const isLoading = isLoadingProject || isLoadingTasks;
+    const isLoading = isLoadingProject;
 
     // Get user role
     const userRole = currentProject?.members?.find(m => m.user?._id === user?._id || m.user === user?._id)?.role || 'Viewer';
@@ -288,50 +287,19 @@ const ProjectBoard = () => {
                             <ProjectStatistics projectId={id} />
                         </div>
                     ) : (
-                        <div className="flex flex-col md:grid md:grid-cols-4 gap-4 md:gap-6 md:h-[calc(100vh-280px)] pb-4">
-                            {columns.map((column) => (
-                                <div key={column} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 sm:p-4 flex flex-col gap-3 min-h-[200px] md:min-h-0">
-                                    <h3 className="font-semibold text-gray-700 dark:text-gray-300 text-sm sm:text-base">{column}</h3>
-                                    <div className="flex-1 overflow-y-auto space-y-3">
-                                        {isLoadingTasks ? (
-                                            [1, 2].map(i => <TaskCardSkeleton key={i} />)
-                                        ) : (
-                                            tasks
-                                                .filter((task) => task.status === column)
-                                                .map((task) => (
-                                                    <Card
-                                                        key={task._id}
-                                                        className={`cursor-pointer hover:shadow-md transition-shadow ${selectedTasks.includes(task._id) ? 'ring-2 ring-blue-500' : ''}`}
-                                                        onClick={() => setSelectedTask(task)}
-                                                    >
-                                                        <CardHeader className="p-3 sm:p-4">
-                                                            <div className="flex items-start gap-2">
-                                                                <Checkbox
-                                                                    checked={selectedTasks.includes(task._id)}
-                                                                    onCheckedChange={(checked) => handleTaskSelect(checked, task._id)}
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    className="mt-1"
-                                                                />
-                                                                <div className="flex-1 min-w-0">
-                                                                    <CardTitle className="text-sm font-medium truncate">{task.title}</CardTitle>
-                                                                    <div className="flex justify-between items-center mt-2 gap-2">
-                                                                        <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap ${task.priority === 'Critical' ? 'bg-red-100 text-red-800' :
-                                                                            task.priority === 'High' ? 'bg-orange-100 text-orange-800' :
-                                                                                task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                                                    'bg-green-100 text-green-800'
-                                                                            }`}>
-                                                                            {task.priority}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </CardHeader>
-                                                    </Card>
-                                                ))
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="h-[calc(100vh-280px)] pb-4">
+                            <KanbanBoard
+                                projectId={id}
+                                onTaskClick={(task) => setSelectedTask(task)}
+                                onAddTask={(status) => {
+                                    setIsDialogOpen(true);
+                                    // Pre-select status if needed, though form uses default
+                                    // You might want to update form default values here if supported
+                                }}
+                                isViewer={isViewer}
+                                selectedTasks={selectedTasks}
+                                onTaskSelect={(taskId) => handleTaskSelect(!selectedTasks.includes(taskId), taskId)}
+                            />
                         </div>
                     )}
                 </div>
@@ -400,6 +368,40 @@ const ProjectBoard = () => {
                         </div>
 
                         <div className="border-t pt-4">
+                            <div className="mb-4">
+                                <Label className="font-semibold mb-2 block">Attachments</Label>
+                                {selectedTask?.attachments && selectedTask.attachments.length > 0 ? (
+                                    <div className="space-y-2">
+                                        {selectedTask.attachments.map((file, index) => (
+                                            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded border">
+                                                <div className="flex items-center gap-2 overflow-hidden">
+                                                    <FileText className="h-4 w-4 flex-shrink-0 text-blue-500" />
+                                                    <span className="text-sm truncate" title={file.name}>{file.name}</span>
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        // Force download by creating a temporary link
+                                                        const link = document.createElement('a');
+                                                        link.href = file.url;
+                                                        link.download = file.name; // This attribute forces download
+                                                        link.target = '_blank';
+                                                        document.body.appendChild(link);
+                                                        link.click();
+                                                        document.body.removeChild(link);
+                                                    }}
+                                                >
+                                                    <Download className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 italic">No attachments.</p>
+                                )}
+                            </div>
+
                             {!isViewer && <FileUpload taskId={selectedTask?._id} onUploadComplete={(updatedTask) => {
                                 setSelectedTask(updatedTask);
                             }} />}

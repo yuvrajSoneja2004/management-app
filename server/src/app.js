@@ -13,6 +13,7 @@ const projectRoutes = require('./modules/project/project.routes');
 const taskRoutes = require('./modules/task/task.routes');
 const fileRoutes = require('./modules/file/file.routes');
 const notificationRoutes = require('./modules/notification/notification.routes');
+const seedRoutes = require('./routes/seed.routes');
 
 const app = express();
 
@@ -85,6 +86,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/seed', seedRoutes);
 
 
 // 404 Handler - must be after all routes

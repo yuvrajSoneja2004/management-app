@@ -56,3 +56,16 @@ server.listen(PORT, () => {
     logger.info('Backend server started');
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
+
+// Catch uncaught exceptions
+process.on('uncaughtException', (error) => {
+    logger.error('Uncaught Exception:', error);
+    console.error('Uncaught Exception:', error);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+});

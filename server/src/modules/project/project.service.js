@@ -34,7 +34,7 @@ class ProjectService {
         });
 
         // Invalidate cache
-        cacheService.deletePattern(`projects:user:${userId}:*`);
+        await cacheService.deletePattern(`projects:user:${userId}:*`);
 
         return project;
     }
@@ -47,29 +47,34 @@ class ProjectService {
      */
     async getUserProjects(userId, options = {}) {
         const { page = 1, limit = 20 } = options;
-        const cacheKey = `projects:user:${userId}:page:${page}:limit:${limit}`;
+        const maxLimit = 100;
+        const safeLimit = Math.min(parseInt(limit) || 20, maxLimit);
+        const safePage = parseInt(page) || 1;
+
+        const cacheKey = `projects:user:${userId}:page:${safePage}:limit:${safeLimit}`;
 
         // Check cache
-        if (cacheService.has(cacheKey)) {
-            return cacheService.get(cacheKey);
+        const cached = await cacheService.get(cacheKey);
+        if (cached) {
+            return cached;
         }
 
         // Fetch from database
-        const projects = await projectRepository.findByMember(userId, { page, limit, lean: true });
+        const projects = await projectRepository.findByMember(userId, { page: safePage, limit: safeLimit, lean: true });
         const total = await projectRepository.countByMember(userId);
 
         const result = {
             projects,
             pagination: {
-                page,
-                limit,
+                page: safePage,
+                limit: safeLimit,
                 total,
-                pages: Math.ceil(total / limit)
+                pages: Math.ceil(total / safeLimit)
             }
         };
 
         // Cache for 5 minutes
-        cacheService.set(cacheKey, result, 5 * 60 * 1000);
+        await cacheService.set(cacheKey, result, 5 * 60 * 1000);
 
         return result;
     }
@@ -125,7 +130,7 @@ class ProjectService {
         });
 
         // Invalidate cache
-        cacheService.deletePattern(`projects:user:*`);
+        await cacheService.deletePattern(`projects:user:*`);
 
         return updatedProject;
     }
@@ -165,7 +170,7 @@ class ProjectService {
             await session.commitTransaction();
 
             // Invalidate cache
-            cacheService.deletePattern(`projects:user:*`);
+            await cacheService.deletePattern(`projects:user:*`);
 
             return { message: 'Project and associated tasks removed' };
         } catch (error) {
@@ -191,12 +196,8 @@ class ProjectService {
         }
 
         // Check permissions handled in controller/middleware usually, but good to double check here if needed
-        // For simplicity assuming caller checked basic permissions or we check here:
         const member = project.members.find(m => m.user.toString() === userId.toString());
         if (!member || member.role !== 'Admin') {
-            // Note: Owner is always Admin in this logic usually, but strict check:
-            // Logic in controller was: member.role === 'Admin'
-            // Let's stick to that.
             throw new Error('Not authorized to add members');
         }
 

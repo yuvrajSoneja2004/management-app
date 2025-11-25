@@ -16,9 +16,16 @@ import { Plus, LogOut, FolderKanban, Users, CheckCircle2, Clock, Loader2 } from 
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import ProjectCardSkeleton from '@/components/skeletons/ProjectCardSkeleton';
+import { Pagination } from '@/components/ui/pagination';
 
 const Dashboard = () => {
-    const { data, isLoading, error } = useGetProjectsQuery({ page: 1, limit: 20 });
+    const [currentPage, setCurrentPage] = useState(1);
+    const projectsPerPage = 6;
+
+    const { data, isLoading, error } = useGetProjectsQuery({
+        page: currentPage,
+        limit: projectsPerPage
+    });
     const [createProject] = useCreateProjectMutation();
     const [logout] = useLogoutMutation();
     const { user, clearAuth } = useAuthStore();
@@ -27,6 +34,7 @@ const Dashboard = () => {
 
     // Safely access projects with default empty array
     const projects = data?.projects || [];
+    const pagination = data?.pagination || { page: 1, pages: 1, total: 0 };
 
     const {
         register,
@@ -213,7 +221,7 @@ const Dashboard = () => {
                             <FolderKanban className="h-4 w-4 text-blue-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{projects?.length || 0}</div>
+                            <div className="text-3xl font-bold">{pagination.total || 0}</div>
                         </CardContent>
                     </Card>
 
@@ -358,6 +366,16 @@ const Dashboard = () => {
                                     </Card>
                                 ))}
                             </div>
+                        )}
+
+                        {/* Pagination */}
+                        {pagination.pages > 1 && (
+                            <Pagination
+                                currentPage={pagination.page}
+                                totalPages={pagination.pages}
+                                onPageChange={setCurrentPage}
+                                className="mt-8"
+                            />
                         )}
                     </>
                 )}
