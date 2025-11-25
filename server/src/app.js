@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const logger = require('./config/logger');
 const errorHandler = require('./middleware/error.middleware');
 const NotFoundError = require('./errors/NotFoundError');
+const { apiLimiter } = require('./middleware/rateLimiter.middleware');
 
 const authRoutes = require('./modules/auth/auth.routes');
 const projectRoutes = require('./modules/project/project.routes');
@@ -16,8 +17,24 @@ const notificationRoutes = require('./modules/notification/notification.routes')
 const app = express();
 
 // Security Middleware
-app.use(helmet()); // Security headers
-// Note: XSS protection is handled by validation middleware sanitization
+// Helmet - Security headers with enhanced configuration
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'"],
+            imgSrc: ["'self'", 'data:', 'https:'],
+            connectSrc: ["'self'", process.env.SERVER_URL || 'http://localhost:5000', 'ws://localhost:5000', 'ws://*'],
+            fontSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+        },
+    },
+    crossOriginEmbedderPolicy: false, // Allow embedding for file previews
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // CORS configuration
 app.use(cors({
@@ -25,10 +42,14 @@ app.use(cors({
     credentials: true
 }));
 
-// Body parsing and cookies
+// Body parsing with size limits to prevent DoS
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+// NOTE: XSS Protection is handled by validation middleware (sanitizeHtml function)
+// xss-clean package is incompatible with Express 5.x
+// All user inputs are sanitized in validation.middleware.js
 
 // Logging
 if (process.env.NODE_ENV !== 'production') {
@@ -41,13 +62,6 @@ if (process.env.NODE_ENV !== 'production') {
     }));
 }
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/files', fileRoutes);
-app.use('/api/notifications', notificationRoutes);
-
 // Basic Route
 app.get('/', (req, res) => {
     res.json({
@@ -57,10 +71,21 @@ app.get('/', (req, res) => {
     });
 });
 
-// Health check endpoint
+// Health check endpoint (no rate limiting)
 app.get('/health', (req, res) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
+
+// Apply global rate limiting to all API routes
+app.use('/api', apiLimiter);
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/files', fileRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 // 404 Handler - must be after all routes
 app.use((req, res, next) => {

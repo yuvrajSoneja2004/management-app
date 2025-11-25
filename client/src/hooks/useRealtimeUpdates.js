@@ -15,10 +15,21 @@ export const useRealtimeUpdates = (projectId) => {
     useEffect(() => {
         if (!socket || !connected || !projectId) return;
 
+        // Join the project room for real-time updates
+        socket.emit('joinProject', projectId);
+
+        // Helper to extract project ID from various payload shapes
+        const getProjectId = (data) => {
+            if (data.projectId) return data.projectId;
+            if (typeof data.project === 'string') return data.project;
+            if (data.project && data.project._id) return data.project._id;
+            return null;
+        };
+
         // Task created
         const handleTaskCreated = (data) => {
-            if (data.projectId === projectId) {
-                // Invalidate tasks cache
+            const pId = getProjectId(data);
+            if (pId === projectId) {
                 dispatch(
                     baseApi.util.invalidateTags([{ type: 'Tasks', id: `PROJECT-${projectId}` }])
                 );
@@ -27,11 +38,11 @@ export const useRealtimeUpdates = (projectId) => {
 
         // Task updated
         const handleTaskUpdated = (data) => {
-            if (data.projectId === projectId) {
-                // Invalidate specific task and project tasks
+            const pId = getProjectId(data);
+            if (pId === projectId) {
                 dispatch(
                     baseApi.util.invalidateTags([
-                        { type: 'Tasks', id: data.taskId },
+                        { type: 'Tasks', id: data._id || data.taskId },
                         { type: 'Tasks', id: `PROJECT-${projectId}` },
                     ])
                 );
@@ -40,7 +51,8 @@ export const useRealtimeUpdates = (projectId) => {
 
         // Task deleted
         const handleTaskDeleted = (data) => {
-            if (data.projectId === projectId) {
+            const pId = getProjectId(data);
+            if (pId === projectId) {
                 dispatch(
                     baseApi.util.invalidateTags([{ type: 'Tasks', id: `PROJECT-${projectId}` }])
                 );
@@ -49,7 +61,8 @@ export const useRealtimeUpdates = (projectId) => {
 
         // Project updated
         const handleProjectUpdated = (data) => {
-            if (data.projectId === projectId) {
+            const pId = data._id || data.id || data.projectId;
+            if (pId === projectId) {
                 dispatch(
                     baseApi.util.invalidateTags([{ type: 'Projects', id: projectId }])
                 );
@@ -58,22 +71,24 @@ export const useRealtimeUpdates = (projectId) => {
 
         // File uploaded
         const handleFileUploaded = (data) => {
-            if (data.projectId === projectId) {
+            const pId = getProjectId(data);
+            if (pId === projectId) {
                 dispatch(
-                    baseApi.util.invalidateTags([{ type: 'Tasks', id: data.taskId }])
+                    baseApi.util.invalidateTags([{ type: 'Files', id: data.taskId }])
                 );
             }
         };
 
-        // Register event listeners
+        // Register listeners
         socket.on('taskCreated', handleTaskCreated);
         socket.on('taskUpdated', handleTaskUpdated);
         socket.on('taskDeleted', handleTaskDeleted);
         socket.on('projectUpdated', handleProjectUpdated);
         socket.on('fileUploaded', handleFileUploaded);
 
-        // Cleanup
+        // Cleanup on unmount
         return () => {
+            socket.emit('leaveProject', projectId);
             socket.off('taskCreated', handleTaskCreated);
             socket.off('taskUpdated', handleTaskUpdated);
             socket.off('taskDeleted', handleTaskDeleted);

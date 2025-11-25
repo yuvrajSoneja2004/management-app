@@ -232,7 +232,7 @@ exports.validateCreateTask = [
         .optional()
         .custom(isValidObjectId).withMessage('Invalid assignee ID'),
     body('dueDate')
-        .optional()
+        .optional({ checkFalsy: true })
         .isISO8601().withMessage('Invalid due date format'),
     body('estimatedTime')
         .optional()
@@ -269,13 +269,13 @@ exports.validateUpdateTask = [
         .optional()
         .custom(isValidObjectId).withMessage('Invalid assignee ID'),
     body('dueDate')
-        .optional()
+        .optional({ checkFalsy: true })
         .isISO8601().withMessage('Invalid due date format'),
     body('estimatedTime')
         .optional()
         .isFloat({ min: 0 }).withMessage('Estimated time must be a positive number'),
     body('actualTime')
-        .optional()
+        .optional({ checkFalsy: true })
         .isFloat({ min: 0 }).withMessage('Actual time must be a positive number'),
     handleValidationErrors
 ];

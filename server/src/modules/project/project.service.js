@@ -251,13 +251,31 @@ class ProjectService {
             }
         }
 
+        const inviter = await authRepository.findById(userId);
+        const inviterName = inviter.username;
+
         // Check pending invitation
         const existingInvitation = await invitationRepository.findPendingInvitation(projectId, email);
         if (existingInvitation) {
-            throw new Error('An invitation has already been sent to this email');
+            // Resend email for existing invitation
+            try {
+                await sendInvitationEmail(email, existingInvitation.token, project.name, inviterName);
+                return {
+                    message: 'Invitation email resent successfully',
+                    invitation: existingInvitation
+                };
+            } catch (emailError) {
+                console.error('Email resend failed:', emailError);
+                return {
+                    message: 'Invitation exists but email failed to send. You can share the link manually.',
+                    invitation: existingInvitation,
+                    emailFailed: true,
+                    manualLink: `${process.env.CLIENT_URL}/invitations/${existingInvitation.token}/accept`
+                };
+            }
         }
 
-        // Create invitation
+        // Create new invitation
         const token = generateInvitationToken();
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7);
@@ -272,7 +290,23 @@ class ProjectService {
         });
 
         // Send email
-        await sendInvitationEmail(email, token, project.name, (await authRepository.findById(userId)).username);
+        try {
+            await sendInvitationEmail(email, token, project.name, inviterName);
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            // Don't fail the operation, just return warning
+            await logActivity(projectId, userId, 'invitation_created_email_failed', {
+                invitedEmail: email,
+                role: role || 'Viewer'
+            });
+
+            return {
+                message: 'Invitation created but email failed to send. You can share the link manually.',
+                invitation,
+                emailFailed: true,
+                manualLink: `${process.env.CLIENT_URL}/invitations/${token}/accept`
+            };
+        }
 
         await logActivity(projectId, userId, 'invitation_sent', {
             invitedEmail: email,

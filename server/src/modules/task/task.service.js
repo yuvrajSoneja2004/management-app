@@ -76,6 +76,14 @@ class TaskService {
             });
         }
 
+        // Emit socket event for real-time updates
+        if (io) {
+            io.to(projectId).emit('taskCreated', populatedTask);
+        }
+
+        // Invalidate task cache for this project
+        cacheService.deletePattern(`tasks:project:${projectId}:*`);
+
         return populatedTask;
     }
 
@@ -248,6 +256,9 @@ class TaskService {
             io.to(task.project._id.toString()).emit('taskUpdated', populatedTask);
         }
 
+        // Invalidate task cache for this project
+        cacheService.deletePattern(`tasks:project:${task.project._id}:*`);
+
         return populatedTask;
     }
 
@@ -285,8 +296,11 @@ class TaskService {
 
         // Emit socket event
         if (io) {
-            io.to(task.project.toString()).emit('taskDeleted', taskId);
+            io.to(task.project.toString()).emit('taskDeleted', { taskId, projectId: task.project.toString() });
         }
+
+        // Invalidate task cache for this project
+        cacheService.deletePattern(`tasks:project:${task.project}:*`);
 
         return { message: 'Task removed', taskId };
     }
@@ -329,6 +343,8 @@ class TaskService {
                 status,
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
+            // Invalidate cache for each affected project
+            cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
 
         return { message: `${taskIds.length} tasks updated successfully`, updatedCount: taskIds.length };
@@ -372,6 +388,8 @@ class TaskService {
                 assigneeCount: assigneeIds.length,
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
+            // Invalidate cache for each affected project
+            cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
 
         return { message: `${taskIds.length} tasks assigned successfully`, updatedCount: taskIds.length };
@@ -415,6 +433,8 @@ class TaskService {
                 action: 'bulk_delete',
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
+            // Invalidate cache for each affected project
+            cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
 
         return { message: `${taskIds.length} tasks deleted successfully`, deletedCount: taskIds.length };

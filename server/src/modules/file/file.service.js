@@ -49,7 +49,12 @@ class FileService {
 
         // Emit socket event for real-time updates
         if (io) {
-            io.to(task.project.toString()).emit('taskUpdated', task);
+            // Emit a specific fileUploaded event so the client can invalidate the cache for the affected task
+            io.to(task.project.toString()).emit('fileUploaded', {
+                taskId: task._id,
+                projectId: task.project.toString(),
+                file: uploadedFile
+            });
         }
 
         return task;

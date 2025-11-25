@@ -1,12 +1,15 @@
 const rateLimit = require('express-rate-limit');
 
-// General API rate limiter
+// General API rate limiter - Applied to all /api routes
+// For 10K concurrent users, this allows reasonable usage while preventing abuse
 exports.apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
+    max: 200, // Increased from 100 to support higher concurrency
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    // Skip rate limiting for successful requests to allow legitimate high-volume users
+    skipSuccessfulRequests: false,
 });
 
 // Strict limiter for authentication endpoints
@@ -27,3 +30,16 @@ exports.resetLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
+
+// File upload limiter - Stricter due to resource-intensive operations
+exports.uploadLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 20, // Limit file uploads to 20 per 15 minutes per IP
+    message: 'Too many file uploads, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// NOTE: For production with 10K+ concurrent users across multiple server instances,
+// consider implementing Redis-based rate limiting using 'rate-limit-redis' package.
+// This ensures rate limits are shared across all server instances in a cluster.

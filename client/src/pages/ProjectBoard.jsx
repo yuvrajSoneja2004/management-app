@@ -99,6 +99,7 @@ const ProjectBoard = () => {
                 projectId: id,
                 tags: data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
                 estimatedTime: data.estimatedTime ? Number(data.estimatedTime) : undefined,
+                dueDate: data.dueDate || undefined,
             };
             await createTask(taskData).unwrap();
             setIsDialogOpen(false);

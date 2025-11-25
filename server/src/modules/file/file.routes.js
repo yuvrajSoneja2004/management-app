@@ -3,11 +3,12 @@ const { uploadFile } = require('./file.controller');
 const { protect } = require('../../middleware/auth.middleware');
 const upload = require('../../middleware/upload.middleware');
 const { validateFileUpload } = require('../../middleware/validation.middleware');
+const { uploadLimiter } = require('../../middleware/rateLimiter.middleware');
 
 const router = express.Router();
 
 router.use(protect);
 
-router.post('/upload/:taskId', validateFileUpload, upload.single('file'), uploadFile);
+router.post('/upload/:taskId', uploadLimiter, validateFileUpload, upload.single('file'), uploadFile);
 
 module.exports = router;
