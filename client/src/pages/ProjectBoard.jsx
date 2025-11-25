@@ -19,6 +19,7 @@ import InvitationsList from '../components/InvitationsList';
 import ActivityFeed from '../components/ActivityFeed';
 import TaskFilters from '../components/TaskFilters';
 import BulkActions from '../components/BulkActions';
+import { toast } from 'sonner';
 
 const ProjectBoard = () => {
     const { id } = useParams();
@@ -36,7 +37,7 @@ const ProjectBoard = () => {
         clearSelection,
         isLoading
     } = useTaskStore();
-    const { currentProject, getProject } = useProjectStore();
+    const { currentProject, getProject, userRole } = useProjectStore();
     const { user } = useAuth();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
@@ -105,8 +106,14 @@ const ProjectBoard = () => {
         };
     }, [id]);
 
+    const isViewer = userRole?.toLowerCase() === 'viewer';
+
     const handleCreateTask = async (e) => {
         e.preventDefault();
+        if (isViewer) {
+            toast.error("Permission Denied", { description: "Viewers cannot create tasks." });
+            return;
+        }
         await createTask({ ...newTask, projectId: id });
         setIsDialogOpen(false);
         setNewTask({
@@ -118,10 +125,16 @@ const ProjectBoard = () => {
             assignees: [],
             dueDate: ''
         });
+        toast.success("Task created successfully");
     };
 
     const handleStatusChange = async (taskId, newStatus) => {
+        if (isViewer) {
+            toast.error("Permission Denied", { description: "Viewers cannot update task status." });
+            return;
+        }
         await updateTask(taskId, { status: newStatus });
+        toast.success("Task status updated");
     };
 
     const handleFilterChange = (newFilters) => {
@@ -176,7 +189,14 @@ const ProjectBoard = () => {
                             </Button>
                             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                 <DialogTrigger asChild>
-                                    <Button>
+                                    <Button onClick={(e) => {
+                                        if (isViewer) {
+                                            e.preventDefault();
+                                            toast.error("Permission Denied", { description: "You have viewer access only." });
+                                        }
+                                    }}
+                                        className={isViewer ? "opacity-50 cursor-not-allowed" : ""}
+                                    >
                                         <Plus className="h-4 w-4 mr-2" />
                                         New Task
                                     </Button>
@@ -310,6 +330,7 @@ const ProjectBoard = () => {
                             selectedTasks={selectedTasks}
                             onActionComplete={handleBulkActionComplete}
                             projectMembers={currentProject?.members || []}
+                            userRole={userRole}
                         />
                     </div>
 
@@ -360,9 +381,7 @@ const ProjectBoard = () => {
                     </div>
                 </div>
 
-
             </div>
-
 
             {/* Sidebar */}
             {
@@ -396,6 +415,7 @@ const ProjectBoard = () => {
                                 <div className="mt-1">
                                     <Select
                                         value={selectedTask?.status}
+                                        disabled={isViewer}
                                         onValueChange={(value) => handleStatusChange(selectedTask._id, value)}
                                     >
                                         <SelectTrigger>
@@ -457,7 +477,8 @@ const ProjectBoard = () => {
                         </div>
 
                         <div className="border-t pt-4">
-                            <FileUpload taskId={selectedTask?._id} />
+                            {!isViewer && <FileUpload taskId={selectedTask?._id} />}
+                            {isViewer && <p className="text-sm text-gray-500 italic text-center">Viewers cannot upload files.</p>}
                         </div>
                     </div>
                 </DialogContent>
