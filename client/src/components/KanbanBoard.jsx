@@ -60,34 +60,9 @@ const KanbanBoard = ({ projectId, filters, onTaskClick, onAddTask, isViewer, sel
     };
 
     const handlePageChange = (status, newPage) => {
-        setColumnPages(prev => ({
-            ...prev,
-            [status]: newPage
-        }));
-    };
-
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
-            {STATUSES.map((status) => {
-                const query = queries[status];
-                return (
-                    <KanbanColumn
-                        key={status}
-                        title={status}
-                        status={status}
-                        tasks={query.data?.tasks || []}
-                        isLoading={query.isLoading}
-                        pagination={query.data?.pagination}
-                        onPageChange={(newPage) => handlePageChange(status, newPage)}
-                        onTaskClick={onTaskClick}
-                        onAddTask={onAddTask}
-                        isViewer={isViewer}
-                        selectedTasks={selectedTasks}
-                        onTaskSelect={onTaskSelect}
-                    />
                 );
             })}
-        </div>
+        </div >
     );
 };
 
