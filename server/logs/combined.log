@@ -1360,3 +1360,25 @@
 {"level":"info","message":"Socket 58It6HIgan_lHom-AAAX joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
 {"level":"info","message":"Socket XXsQbBgBSOFY2_0MAAAW joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
 {"level":"info","message":"Socket cdlxM1D3yG8dtxD3AAAb joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:56:52"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:56:52"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:56:52"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:56:52"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 24v3JILAyEQPZMcaAAAF","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Client connected: 24v3JILAyEQPZMcaAAAF, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 3AzLuje1CqJyNSYFAAAG","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Client connected: 3AzLuje1CqJyNSYFAAAG, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Socket 3AzLuje1CqJyNSYFAAAG left project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: l08fbAanUAyb7S9mAAAH","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Client connected: l08fbAanUAyb7S9mAAAH, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: VKrlh6aKFUvIz6HrAAAL","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Client connected: VKrlh6aKFUvIz6HrAAAL, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:56:56"}
+{"level":"info","message":"Socket 3AzLuje1CqJyNSYFAAAG joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: dbBoq7gNYuBxuWjkAAAI","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Client connected: dbBoq7gNYuBxuWjkAAAI, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: ICsm-aABlbh8Ghu-AAAJ","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Client connected: ICsm-aABlbh8Ghu-AAAJ, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Socket dbBoq7gNYuBxuWjkAAAI left project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Socket ICsm-aABlbh8Ghu-AAAJ left project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Socket dbBoq7gNYuBxuWjkAAAI joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Socket ICsm-aABlbh8Ghu-AAAJ joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
