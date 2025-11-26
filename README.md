@@ -28,7 +28,7 @@ Jello is a real-time collaborative project management platform built with the ME
 ### Key Features
 
 - Real-time Updates - Instant synchronization across all connected clients using Socket.io
-- Kanban Board - Drag-and-drop task management with pagination
+- Kanban Board - Visual task management with pagination
 - Team Collaboration - Role-based access control (Owner, Admin, Member, Viewer)
 - Advanced Filtering - Filter, sort, and search tasks with server-side optimization
 - Bulk Operations - Update, assign, or delete multiple tasks simultaneously
