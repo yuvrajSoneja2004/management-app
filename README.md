@@ -1,7 +1,7 @@
 <div align="center">
   <img src="./client/src/assets/imgs/site_logo.png" alt="Jello Logo" width="200"/>
   
-  # Jello 🐢
+  # Jello
   
   ### Real-Time Collaborative Project Management Platform
   
@@ -13,28 +13,36 @@
 
 ---
 
-## 📖 Project Overview
+## Project Overview
 
-**Jello** is a production-ready, real-time collaborative project management platform built with the MERN stack. Designed to handle **10,000+ concurrent users**, Jello combines modern web technologies with thoughtful architecture decisions to deliver a seamless team collaboration experience.
+Jello is a real-time collaborative project management platform built with the MERN stack. The application provides teams with tools to organize projects, manage tasks, and collaborate effectively through an intuitive interface.
+
+**Note:** This project was developed as an assignment for the Full Stack Developer role at [Webingo](https://webingo.in).
+
+### Live Demo
+
+- **Frontend:** [https://jello.yuvrajsoneja.in](https://jello.yuvrajsoneja.in)
+- **Backend API:** [https://apiJello.yuvrajsoneja.in](https://apiJello.yuvrajsoneja.in)
+- **API Documentation:** [https://apiJello.yuvrajsoneja.in/api-docs](https://apiJello.yuvrajsoneja.in/api-docs)
 
 ### Key Features
 
-- 🚀 **Real-time Updates** - Instant synchronization across all connected clients using Socket.io
-- 📊 **Kanban Board** - Intuitive drag-and-drop task management with pagination
-- 👥 **Team Collaboration** - Role-based access control (Owner, Admin, Member, Viewer)
-- 🔍 **Advanced Filtering** - Filter, sort, and search tasks with server-side optimization
-- 📦 **Bulk Operations** - Update, assign, or delete multiple tasks simultaneously
-- 📧 **Email Notifications** - Branded email templates for invitations and password resets
-- 📱 **Responsive Design** - Mobile-first UI with dark mode support
-- 🔐 **Secure Authentication** - JWT-based auth with refresh tokens and cookie support
-- 📄 **File Attachments** - Azure Blob Storage integration for task files
-- 📈 **Project Statistics** - Real-time analytics and activity feeds
-- 🔔 **Notifications** - In-app notification system with sound alerts
-- 📚 **API Documentation** - Interactive Swagger UI at `/api-docs`
+- Real-time Updates - Instant synchronization across all connected clients using Socket.io
+- Kanban Board - Drag-and-drop task management with pagination
+- Team Collaboration - Role-based access control (Owner, Admin, Member, Viewer)
+- Advanced Filtering - Filter, sort, and search tasks with server-side optimization
+- Bulk Operations - Update, assign, or delete multiple tasks simultaneously
+- Email Notifications - Branded email templates for invitations and password resets
+- Responsive Design - Mobile-first UI with dark mode support
+- Secure Authentication - JWT-based auth with refresh tokens and cookie support
+- File Attachments - Azure Blob Storage integration for task files
+- Project Statistics - Real-time analytics and activity feeds
+- Notifications - In-app notification system with sound alerts
+- API Documentation - Interactive Swagger UI at `/api-docs`
 
 ---
 
-## 🏗️ Architecture & Technology Stack
+## Architecture & Technology Stack
 
 ### Frontend
 - **React 18** - Modern UI library with hooks and concurrent features
@@ -89,7 +97,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -102,8 +110,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/jello.git
-   cd jello
+   git clone https://github.com/yuvrajSoneja2004/management-app.git
+   cd management-app
    ```
 
 2. **Set up environment variables**
@@ -167,60 +175,43 @@
 
 ---
 
-## 🔧 Environment Variables
+## Environment Variables
 
 ### Backend (`server/.env`)
 
 ```env
+# MongoDB Connection
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/?appName=Cluster0
+
+# JWT Secrets
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_REFRESH_SECRET=your-refresh-token-secret
+
 # Server Configuration
 PORT=5000
 NODE_ENV=development
-API_URL=http://localhost:5000
+
+# CORS
 CLIENT_URL=http://localhost:5173
 
-# Database
-MONGODB_URI=mongodb://localhost:27017/jello
-# Or use MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/jello
+# Azure Blob Storage
+AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=your-account;AccountKey=your-key;EndpointSuffix=core.windows.net
+AZURE_STORAGE_CONTAINER_NAME=fileuploads
 
-# Redis (for BullMQ job queue)
-REDIS_URL=redis://localhost:6379
-
-# JWT Authentication
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-JWT_EXPIRE=7d
-JWT_REFRESH_SECRET=your-refresh-token-secret
-JWT_REFRESH_EXPIRE=30d
-
-# Email Configuration (Gmail example)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
+# Email Configuration
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-specific-password
-EMAIL_FROM=Jello <noreply@jello.app>
+EMAIL_FROM=your-email@gmail.com
 
-# Azure Blob Storage (for file uploads)
-AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
-AZURE_STORAGE_CONTAINER_NAME=jello-attachments
-
-# Optional: Sentry for error tracking
-SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+# Redis
+REDIS_URL=redis://localhost:6379
 ```
 
-### Frontend (`client/.env`)
-
-```env
-# API Configuration
-VITE_API_URL=http://localhost:5000
-VITE_SOCKET_URL=http://localhost:5000
-
-# Optional: Analytics
-VITE_GA_TRACKING_ID=G-XXXXXXXXXX
-```
+**Note:** There is no `.env` file required for the client. The frontend connects to the backend API URL specified in the server configuration.
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
 ### Interactive Documentation
 
@@ -341,7 +332,7 @@ curl -X POST http://localhost:5000/api/tasks/bulk/status \
 
 ---
 
-## 🚢 Deployment Guide
+## Deployment Guide
 
 ### Frontend Deployment (Netlify)
 
@@ -425,7 +416,7 @@ curl -X POST http://localhost:5000/api/tasks/bulk/status \
 
 ---
 
-## 💡 Code Comments & Complex Logic
+## Code Comments & Complex Logic
 
 ### Real-time Updates Hook (`useRealtimeUpdates.js`)
 
@@ -602,7 +593,7 @@ const emailWorker = new Worker(
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Run Tests
 
@@ -628,32 +619,18 @@ npm run test:coverage
 
 ---
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📧 Support
-
-For support, email support@jello.app or join our Slack channel.
-
----
-
 <div align="center">
-  Made with ❤️ by the Jello Team 🐢
   
-  [Website](https://jello.app) • [Documentation](https://docs.jello.app) • [API Docs](http://localhost:5000/api-docs)
+  **Developed by Yuvraj Soneja**
+  
+  Assignment for Full Stack Developer Role at [Webingo](https://webingo.in)
+  
+  [Live Demo](https://jello.yuvrajsoneja.in) • [API Documentation](https://apiJello.yuvrajsoneja.in/api-docs) • [GitHub](https://github.com/yuvrajSoneja2004/management-app)
+  
 </div>
