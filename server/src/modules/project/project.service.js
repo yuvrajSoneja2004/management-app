@@ -448,6 +448,78 @@ class ProjectService {
             }
         };
     }
+
+    /**
+     * Archive project (Admin only)
+     * @param {String} projectId - Project ID
+     * @param {String} userId - User ID
+     * @returns {Promise<Object>} Updated project
+     * @throws {Error} If not authorized or project not found
+     */
+    async archiveProject(projectId, userId) {
+        const project = await projectRepository.findById(projectId);
+        if (!project) {
+            throw new Error('Project not found');
+        }
+
+        // Check if user is Admin or Owner
+        const member = project.members.find(m => m.user.toString() === userId.toString());
+        const isOwner = project.owner.toString() === userId.toString();
+
+        if (!isOwner && (!member || member.role !== 'Admin')) {
+            throw new Error('Not authorized to archive project');
+        }
+
+        // Update status
+        project.status = 'Archived';
+        await project.save();
+
+        // Log activity
+        await logActivity(projectId, userId, 'project_archived', {
+            projectName: project.name
+        });
+
+        // Invalidate cache
+        await cacheService.deletePattern(`projects:user:*`);
+
+        return project;
+    }
+
+    /**
+     * Unarchive project (Admin only)
+     * @param {String} projectId - Project ID
+     * @param {String} userId - User ID
+     * @returns {Promise<Object>} Updated project
+     * @throws {Error} If not authorized or project not found
+     */
+    async unarchiveProject(projectId, userId) {
+        const project = await projectRepository.findById(projectId);
+        if (!project) {
+            throw new Error('Project not found');
+        }
+
+        // Check if user is Admin or Owner
+        const member = project.members.find(m => m.user.toString() === userId.toString());
+        const isOwner = project.owner.toString() === userId.toString();
+
+        if (!isOwner && (!member || member.role !== 'Admin')) {
+            throw new Error('Not authorized to unarchive project');
+        }
+
+        // Update status
+        project.status = 'Active';
+        await project.save();
+
+        // Log activity
+        await logActivity(projectId, userId, 'project_unarchived', {
+            projectName: project.name
+        });
+
+        // Invalidate cache
+        await cacheService.deletePattern(`projects:user:*`);
+
+        return project;
+    }
 }
 
 module.exports = new ProjectService();

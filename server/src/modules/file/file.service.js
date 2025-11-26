@@ -1,6 +1,7 @@
 const { uploadToAzure } = require('../../config/azure');
 const Task = require('../task/task.model');
 const Project = require('../project/project.model');
+const cacheService = require('../../services/cache.service');
 
 /**
  * File Service
@@ -57,6 +58,9 @@ class FileService {
             });
         }
 
+        // Invalidate task cache for this project
+        await cacheService.deletePattern(`tasks:project:${task.project._id}:*`);
+
         return task;
     }
 
@@ -93,6 +97,9 @@ class FileService {
 
         // Populate task for response
         await task.populate('assignees', 'username email');
+
+        // Invalidate task cache for this project
+        await cacheService.deletePattern(`tasks:project:${task.project._id}:*`);
 
         return task;
     }

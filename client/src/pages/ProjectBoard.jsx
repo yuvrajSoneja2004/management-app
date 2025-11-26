@@ -27,6 +27,7 @@ import BulkActions from '../components/BulkActions';
 import ProjectStatistics from '../components/ProjectStatistics';
 import TaskCardSkeleton from '@/components/skeletons/TaskCardSkeleton';
 import KanbanBoard from '../components/KanbanBoard';
+import ActiveUsers from '../components/ActiveUsers';
 import { toast } from 'sonner';
 
 const ProjectBoard = () => {
@@ -169,6 +170,7 @@ const ProjectBoard = () => {
                             <h1 className="text-lg sm:text-2xl font-bold truncate">{currentProject?.name}</h1>
                         </div>
                         <div className="flex flex-wrap gap-2">
+                            <ActiveUsers projectId={id} />
                             <InviteMemberDialog projectId={id} />
                             <Button variant="outline" size="sm" onClick={() => setShowSidebar(!showSidebar)} className="flex-shrink-0">
                                 {showSidebar ? <ActivityIcon className="h-4 w-4" /> : <Users className="h-4 w-4" />}

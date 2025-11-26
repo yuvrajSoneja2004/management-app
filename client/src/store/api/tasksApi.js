@@ -2,6 +2,12 @@ import { baseApi } from './baseApi';
 
 export const tasksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
+        // Get single task
+        getTask: builder.query({
+            query: (id) => `/tasks/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Tasks', id }],
+        }),
+
         // Get tasks by project
         getTasks: builder.query({
             query: ({ projectId, page = 1, limit = 50, status, priority, search }) => {
@@ -64,32 +70,11 @@ export const tasksApi = baseApi.injectEndpoints({
                 method: 'PUT',
                 body: updates,
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: 'Tasks', id }],
-            // Optimistic update
-            async onQueryStarted({ id, projectId, ...updates }, { dispatch, queryFulfilled }) {
-                const patchResults = [];
-
-                // Update in task list
-                const listPatch = dispatch(
-                    tasksApi.util.updateQueryData(
-                        'getTasks',
-                        { projectId, page: 1, limit: 50 },
-                        (draft) => {
-                            const task = draft.tasks.find((t) => t._id === id);
-                            if (task) {
-                                Object.assign(task, updates);
-                            }
-                        }
-                    )
-                );
-                patchResults.push(listPatch);
-
-                try {
-                    await queryFulfilled;
-                } catch {
-                    patchResults.forEach((patch) => patch.undo());
-                }
-            },
+            // Invalidate all task queries for this project to ensure proper refetch
+            invalidatesTags: (result, error, { id, projectId }) => [
+                { type: 'Tasks', id },
+                { type: 'Tasks', id: `PROJECT-${projectId}` }
+            ],
         }),
 
         // Delete task
@@ -140,6 +125,7 @@ export const tasksApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useGetTaskQuery,
     useGetTasksQuery,
     useCreateTaskMutation,
     useUpdateTaskMutation,

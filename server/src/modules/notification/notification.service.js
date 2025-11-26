@@ -15,7 +15,7 @@ class NotificationService {
      * @param {String} fromUserId - User who triggered the notification (optional)
      * @returns {Promise<Object>} Created notification
      */
-    async createNotification(userId, type, message, projectId, taskId = null, fromUserId = null) {
+    async createNotification(userId, type, message, projectId, taskId = null, fromUserId = null, io = null) {
         try {
             const notificationData = {
                 user: userId,
@@ -26,7 +26,14 @@ class NotificationService {
                 from: fromUserId
             };
 
-            return await notificationRepository.createNotification(notificationData);
+            const notification = await notificationRepository.createNotification(notificationData);
+
+            // Emit real-time notification if IO instance is provided
+            if (io) {
+                io.to(`user:${userId}`).emit('notification', notification);
+            }
+
+            return notification;
         } catch (error) {
             console.error('Error creating notification:', error);
             throw new Error('Failed to create notification');

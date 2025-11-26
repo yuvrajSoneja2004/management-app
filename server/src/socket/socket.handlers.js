@@ -20,7 +20,7 @@ function initializeSocketHandlers(io) {
         socket.on('joinProject', async (projectId) => {
             try {
                 // Verify user is a project member
-                const project = await projectRepository.findById(projectId);
+                const project = await projectRepository.findByIdWithMembers(projectId);
 
                 if (!project) {
                     socket.emit('error', { message: 'Project not found' });
@@ -28,7 +28,7 @@ function initializeSocketHandlers(io) {
                 }
 
                 const isMember = project.members.some(
-                    m => m.user.toString() === socket.userId.toString()
+                    m => m.user._id.toString() === socket.userId.toString()
                 );
 
                 if (!isMember) {
@@ -43,13 +43,34 @@ function initializeSocketHandlers(io) {
 
                 logger.info(`Socket ${socket.id} joined project ${projectId}`);
 
-                // Notify user
-                socket.emit('joinedProject', { projectId });
+                // Get current user info
+                const currentUser = project.members.find(m => m.user._id.toString() === socket.userId.toString());
 
-                // Notify other members
+                // Get all active users in this project room
+                const socketsInRoom = await io.in(projectId).fetchSockets();
+                const activeUsers = socketsInRoom.map(s => ({
+                    id: s.userId,
+                    username: s.username,
+                    socketId: s.id
+                }));
+
+                // Notify user they joined
+                socket.emit('joinedProject', { projectId, activeUsers });
+
+                // Notify other members with username and project name
                 socket.to(projectId).emit('userJoined', {
-                    userId: socket.userId,
-                    projectId
+                    user: {
+                        id: socket.userId,
+                        username: currentUser?.user?.username || 'Unknown User'
+                    },
+                    projectId,
+                    projectName: project.name
+                });
+
+                // Broadcast updated active users list to all in room
+                io.to(projectId).emit('activeUsersUpdated', {
+                    projectId,
+                    users: activeUsers
                 });
             } catch (error) {
                 logger.error(`Error joining project: ${error.message}`);
@@ -57,88 +78,13 @@ function initializeSocketHandlers(io) {
             }
         });
 
-        /**
-         * Leave a project room
-         */
-        socket.on('leaveProject', (projectId) => {
-            socket.leave(projectId);
-            socket.activeRooms.delete(projectId);
-
-            logger.info(`Socket ${socket.id} left project ${projectId}`);
-
-            socket.emit('leftProject', { projectId });
-            socket.to(projectId).emit('userLeft', {
-                userId: socket.userId,
-                projectId
-            });
-        });
-
-        /**
-         * Request task lock for editing
-         */
-        socket.on('requestTaskLock', ({ taskId, projectId }) => {
-            const acquired = taskLockManager.acquireLock(taskId, socket.userId);
-
-            if (acquired) {
-                socket.emit('taskLockAcquired', { taskId });
-                // Notify others in the project
-                socket.to(projectId).emit('taskLocked', {
-                    taskId,
-                    userId: socket.userId
-                });
-                logger.info(`Task lock acquired: Task ${taskId}, User ${socket.userId}`);
-            } else {
-                const lockInfo = taskLockManager.isLocked(taskId);
-                socket.emit('taskLockDenied', {
-                    taskId,
-                    lockedBy: lockInfo?.userId,
-                    expiresIn: lockInfo?.expiresIn
-                });
-                logger.info(`Task lock denied: Task ${taskId}, User ${socket.userId}`);
-            }
-        });
-
-        /**
-         * Release task lock
-         */
-        socket.on('releaseTaskLock', ({ taskId, projectId }) => {
-            const released = taskLockManager.releaseLock(taskId, socket.userId);
-
-            if (released) {
-                socket.emit('taskLockReleased', { taskId });
-                socket.to(projectId).emit('taskUnlocked', { taskId });
-                logger.info(`Task lock released: Task ${taskId}, User ${socket.userId}`);
-            }
-        });
-
-        /**
-         * Extend task lock (keep-alive)
-         */
-        socket.on('extendTaskLock', ({ taskId }) => {
-            const extended = taskLockManager.extendLock(taskId, socket.userId);
-
-            if (extended) {
-                socket.emit('taskLockExtended', { taskId });
-            } else {
-                socket.emit('taskLockExpired', { taskId });
-            }
-        });
-
-        /**
-         * Typing indicator for tasks
-         */
-        socket.on('taskTyping', ({ taskId, projectId, isTyping }) => {
-            socket.to(projectId).emit('userTaskTyping', {
-                taskId,
-                userId: socket.userId,
-                isTyping
-            });
-        });
+        // Join user-specific room for personal notifications
+        socket.join(`user:${socket.userId}`);
 
         /**
          * Handle disconnection
          */
-        socket.on('disconnect', () => {
+        socket.on('disconnect', async () => {
             logger.info(`Client disconnected: ${socket.id}, User: ${socket.userId}`);
 
             // Release all locks held by this user
@@ -154,13 +100,57 @@ function initializeSocketHandlers(io) {
                 }
             }
 
-            // Notify rooms about user disconnect
+            // Notify rooms about user disconnect and update active users
             for (const projectId of socket.activeRooms) {
                 socket.to(projectId).emit('userDisconnected', {
                     userId: socket.userId,
                     projectId
                 });
+
+                // Get updated active users list for this project
+                const socketsInRoom = await io.in(projectId).fetchSockets();
+                const activeUsers = socketsInRoom.map(s => ({
+                    id: s.userId,
+                    username: s.username,
+                    socketId: s.id
+                }));
+
+                // Broadcast updated active users list
+                io.to(projectId).emit('activeUsersUpdated', {
+                    projectId,
+                    users: activeUsers
+                });
             }
+        });
+
+        /**
+         * Leave a project room
+         */
+        socket.on('leaveProject', async (projectId) => {
+            socket.leave(projectId);
+            socket.activeRooms.delete(projectId);
+
+            logger.info(`Socket ${socket.id} left project ${projectId}`);
+
+            socket.emit('leftProject', { projectId });
+            socket.to(projectId).emit('userLeft', {
+                userId: socket.userId,
+                projectId
+            });
+
+            // Get updated active users list for this project
+            const socketsInRoom = await io.in(projectId).fetchSockets();
+            const activeUsers = socketsInRoom.map(s => ({
+                id: s.userId,
+                username: s.username,
+                socketId: s.id
+            }));
+
+            // Broadcast updated active users list
+            io.to(projectId).emit('activeUsersUpdated', {
+                projectId,
+                users: activeUsers
+            });
         });
 
         /**

@@ -112,6 +112,30 @@ export const projectsApi = baseApi.injectEndpoints({
             query: ({ projectId, page = 1, limit = 20 }) =>
                 `/projects/${projectId}/activities?page=${page}&limit=${limit}`,
         }),
+
+        // Archive project
+        archiveProject: builder.mutation({
+            query: (id) => ({
+                url: `/projects/${id}/archive`,
+                method: 'PUT',
+            }),
+            invalidatesTags: (result, error, id) => [
+                { type: 'Projects', id },
+                { type: 'Projects', id: 'LIST' },
+            ],
+        }),
+
+        // Unarchive project
+        unarchiveProject: builder.mutation({
+            query: (id) => ({
+                url: `/projects/${id}/unarchive`,
+                method: 'PUT',
+            }),
+            invalidatesTags: (result, error, id) => [
+                { type: 'Projects', id },
+                { type: 'Projects', id: 'LIST' },
+            ],
+        }),
     }),
 });
 
@@ -125,4 +149,6 @@ export const {
     useAcceptInvitationMutation,
     useGetProjectInvitationsQuery,
     useGetProjectActivitiesQuery,
+    useArchiveProjectMutation,
+    useUnarchiveProjectMutation,
 } = projectsApi;

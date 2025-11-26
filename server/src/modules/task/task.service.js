@@ -219,7 +219,6 @@ class TaskService {
             taskId: task._id,
             changes: updates
         });
-
         // Notifications
         // 1. Status change
         if (updates.status && updates.status !== oldStatus) {
@@ -231,7 +230,8 @@ class TaskService {
                         `Task "${task.title}" status changed to ${updates.status}`,
                         task.project._id,
                         task._id,
-                        userId
+                        userId,
+                        io
                     );
                 }
             });
@@ -247,7 +247,8 @@ class TaskService {
                         `You were assigned to task: ${task.title}`,
                         task.project._id,
                         task._id,
-                        userId
+                        userId,
+                        io
                     );
                 }
             });
@@ -255,7 +256,18 @@ class TaskService {
 
         // Emit socket event
         if (io) {
-            io.to(task.project._id.toString()).emit('taskUpdated', populatedTask);
+            const roomId = task.project._id.toString();
+            console.log('[Socket] Emitting taskUpdated to room:', roomId);
+            console.log('[Socket] Task data being emitted:', {
+                _id: populatedTask._id,
+                title: populatedTask.title,
+                status: populatedTask.status,
+                project: populatedTask.project._id
+            });
+            io.to(roomId).emit('taskUpdated', populatedTask);
+            console.log('[Socket] taskUpdated event emitted successfully');
+        } else {
+            console.warn('[Socket] IO instance not available, cannot emit taskUpdated');
         }
 
         // Invalidate task cache for this project

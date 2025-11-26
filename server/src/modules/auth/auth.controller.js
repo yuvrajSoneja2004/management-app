@@ -1,4 +1,5 @@
 const authService = require('./auth.service');
+const authRepository = require('./auth.repository');
 
 /**
  * Auth Controller
@@ -146,11 +147,34 @@ exports.resetPassword = async (req, res, next) => {
     }
 };
 
+// @desc    Verify reset token
+// @route   GET /api/auth/verify-reset-token/:token
+// @access  Public
+exports.verifyResetToken = async (req, res, next) => {
+    try {
+        const { token } = req.params;
+
+        const crypto = require('crypto');
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const user = await authRepository.findByResetToken(hashedToken);
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        res.json({ valid: true });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     registerUser: exports.registerUser,
     loginUser: exports.loginUser,
     logoutUser: exports.logoutUser,
     refresh: exports.refresh,
     forgotPassword: exports.forgotPassword,
-    resetPassword: exports.resetPassword
+    resetPassword: exports.resetPassword,
+    verifyResetToken: exports.verifyResetToken
 };

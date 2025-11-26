@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useGetProjectsQuery, useCreateProjectMutation } from '@/store/api/projectsApi';
+import { useGetProjectsQuery, useCreateProjectMutation, useArchiveProjectMutation, useUnarchiveProjectMutation } from '@/store/api/projectsApi';
 import { useLogoutMutation } from '@/store/api/authApi';
 import useAuthStore from '../store/authStore';
 import { projectSchema } from '@/lib/validationSchemas';
@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, LogOut, FolderKanban, Users, CheckCircle2, Clock, Loader2 } from 'lucide-react';
+import { Plus, LogOut, FolderKanban, Users, CheckCircle2, Clock, Loader2, Archive, ArchiveRestore } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import ProjectCardSkeleton from '@/components/skeletons/ProjectCardSkeleton';
@@ -27,6 +27,8 @@ const Dashboard = () => {
         limit: projectsPerPage
     });
     const [createProject] = useCreateProjectMutation();
+    const [archiveProject] = useArchiveProjectMutation();
+    const [unarchiveProject] = useUnarchiveProjectMutation();
     const [logout] = useLogoutMutation();
     const { user, clearAuth } = useAuthStore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -76,6 +78,34 @@ const Dashboard = () => {
             clearAuth();
             navigate('/login');
         }
+    };
+
+    const handleArchive = async (e, projectId) => {
+        e.stopPropagation();
+        try {
+            await archiveProject(projectId).unwrap();
+            toast.success('Project archived successfully');
+        } catch (error) {
+            toast.error('Failed to archive project');
+        }
+    };
+
+    const handleUnarchive = async (e, projectId) => {
+        e.stopPropagation();
+        try {
+            await unarchiveProject(projectId).unwrap();
+            toast.success('Project restored successfully');
+        } catch (error) {
+            toast.error('Failed to restore project');
+        }
+    };
+
+    // Check if user is admin/owner of a project
+    const isProjectAdmin = (project) => {
+        if (!project || !user) return false;
+        const isOwner = project.owner === user._id || project.owner?._id === user._id;
+        const member = project.members?.find(m => (m.user?._id || m.user) === user._id);
+        return isOwner || member?.role === 'Admin';
     };
 
     return (
@@ -301,70 +331,125 @@ const Dashboard = () => {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                                {projects?.map((project) => (
-                                    <Card
-                                        key={project._id}
-                                        className="card-hover border-0 shadow-soft cursor-pointer group"
-                                        onClick={() => navigate(`/projects/${project._id}`)}
-                                    >
-                                        <CardHeader>
-                                            <div className="flex items-start justify-between mb-2">
-                                                <div className="flex-1">
-                                                    <CardTitle className="text-xl mb-2 group-hover:text-blue-600 transition-colors">
-                                                        {project.name}
-                                                    </CardTitle>
-                                                    <CardDescription className="line-clamp-2">
-                                                        {project.description || 'No description'}
-                                                    </CardDescription>
-                                                    <div className="flex flex-wrap gap-1 mt-2">
-                                                        {project.tags?.map((tag, idx) => (
-                                                            <span key={idx} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full dark:bg-blue-900/20 dark:text-blue-400">
-                                                                {tag}
-                                                            </span>
-                                                        ))}
+                                {projects?.map((project) => {
+                                    const isArchived = project.status === 'Archived';
+                                    const isAdmin = isProjectAdmin(project);
+
+                                    return (
+                                        <Card
+                                            key={project._id}
+                                            className={`card-hover border-0 shadow-soft group ${isArchived
+                                                ? 'opacity-60 bg-gray-50 dark:bg-gray-900/50 cursor-default'
+                                                : 'cursor-pointer'
+                                                }`}
+                                            onClick={() => !isArchived && navigate(`/projects/${project._id}`)}
+                                        >
+                                            <CardHeader>
+                                                <div className="flex items-start justify-between mb-2">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <CardTitle className={`text-xl ${isArchived
+                                                                ? 'text-gray-500 dark:text-gray-600'
+                                                                : 'group-hover:text-blue-600 transition-colors'
+                                                                }`}>
+                                                                {project.name}
+                                                            </CardTitle>
+                                                            {isArchived && (
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
+                                                                    <Archive className="h-3 w-3 mr-1" />
+                                                                    Archived
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <CardDescription className="line-clamp-2">
+                                                            {project.description || 'No description'}
+                                                        </CardDescription>
+                                                        <div className="flex flex-wrap gap-1 mt-2">
+                                                            {project.tags?.map((tag, idx) => (
+                                                                <span key={idx} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full dark:bg-blue-900/20 dark:text-blue-400">
+                                                                    {tag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                        {project.startDate && project.endDate && (
+                                                            <p className="text-xs text-muted-foreground mt-1">
+                                                                {new Date(project.startDate).toLocaleDateString()} - {new Date(project.endDate).toLocaleDateString()}
+                                                            </p>
+                                                        )}
                                                     </div>
-                                                    {project.startDate && project.endDate && (
-                                                        <p className="text-xs text-muted-foreground mt-1">
-                                                            {new Date(project.startDate).toLocaleDateString()} - {new Date(project.endDate).toLocaleDateString()}
-                                                        </p>
-                                                    )}
                                                 </div>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="flex items-center justify-between text-sm">
-                                                <div className="flex items-center gap-2">
-                                                    <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${project.status === 'Active'
-                                                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                                                            : project.status === 'Completed'
-                                                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
-                                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
-                                                            }`}
-                                                    >
-                                                        {project.status}
-                                                    </span>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="flex items-center justify-between text-sm">
+                                                    <div className="flex items-center gap-2">
+                                                        <span
+                                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${project.status === 'Active'
+                                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                                                : project.status === 'Archived'
+                                                                    ? 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                                                                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
+                                                                }`}
+                                                        >
+                                                            {project.status}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 text-muted-foreground">
+                                                        <Users className="h-4 w-4" />
+                                                        <span className="font-medium">{project.members?.length || 0}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center gap-1 text-muted-foreground">
-                                                    <Users className="h-4 w-4" />
-                                                    <span className="font-medium">{project.members?.length || 0}</span>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter className="pt-0">
-                                            <Button
-                                                variant="ghost"
-                                                className="w-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 group-hover:text-blue-600 transition-colors"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(`/projects/${project._id}`);
-                                                }}
-                                            >
-                                                Open Project
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                ))}
+                                            </CardContent>
+                                            <CardFooter className="pt-0 flex gap-2">
+                                                {!isArchived ? (
+                                                    <>
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="flex-1 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 group-hover:text-blue-600 transition-colors"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                navigate(`/projects/${project._id}`);
+                                                            }}
+                                                        >
+                                                            Open Project
+                                                        </Button>
+                                                        {isAdmin && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                                onClick={(e) => handleArchive(e, project._id)}
+                                                                title="Archive project"
+                                                            >
+                                                                <Archive className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="flex-1"
+                                                            disabled
+                                                        >
+                                                            Archived
+                                                        </Button>
+                                                        {isAdmin && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                                                onClick={(e) => handleUnarchive(e, project._id)}
+                                                                title="Restore project"
+                                                            >
+                                                                <ArchiveRestore className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                })}
                             </div>
                         )}
 

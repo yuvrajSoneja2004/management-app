@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProject, getProjects, getProjectById, updateProject, deleteProject, addMember, inviteMember, acceptInvitation, getProjectInvitations, cancelInvitation, getProjectActivities } = require('./project.controller');
+const { createProject, getProjects, getProjectById, updateProject, deleteProject, addMember, inviteMember, acceptInvitation, getProjectInvitations, cancelInvitation, getProjectActivities, archiveProject, unarchiveProject } = require('./project.controller');
 const { protect } = require('../../middleware/auth.middleware');
 const { checkRole } = require('../../middleware/rbac.middleware');
 const {
@@ -25,6 +25,10 @@ router.route('/:id')
     .delete(validateProjectId, deleteProject);
 
 router.post('/:id/members', validateAddMember, checkRole(['Admin', 'Owner']), addMember);
+
+// Archive/Unarchive routes
+router.put('/:id/archive', validateProjectId, checkRole(['Admin', 'Owner']), archiveProject);
+router.put('/:id/unarchive', validateProjectId, checkRole(['Admin', 'Owner']), unarchiveProject);
 
 // Invitation routes
 router.post('/:id/invite', validateInviteMember, inviteMember);

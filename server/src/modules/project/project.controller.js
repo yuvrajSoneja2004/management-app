@@ -213,6 +213,42 @@ exports.getProjectActivities = async (req, res, next) => {
     }
 };
 
+// @desc    Archive project
+// @route   PUT /api/projects/:id/archive
+// @access  Private (Admin only)
+exports.archiveProject = async (req, res, next) => {
+    try {
+        const project = await projectService.archiveProject(req.params.id, req.user._id);
+        res.json(project);
+    } catch (error) {
+        if (error.message === 'Project not found') {
+            return res.status(404).json({ message: error.message });
+        }
+        if (error.message === 'Not authorized to archive project') {
+            return res.status(403).json({ message: error.message });
+        }
+        next(error);
+    }
+};
+
+// @desc    Unarchive project
+// @route   PUT /api/projects/:id/unarchive
+// @access  Private (Admin only)
+exports.unarchiveProject = async (req, res, next) => {
+    try {
+        const project = await projectService.unarchiveProject(req.params.id, req.user._id);
+        res.json(project);
+    } catch (error) {
+        if (error.message === 'Project not found') {
+            return res.status(404).json({ message: error.message });
+        }
+        if (error.message === 'Not authorized to unarchive project') {
+            return res.status(403).json({ message: error.message });
+        }
+        next(error);
+    }
+};
+
 module.exports = {
     createProject: exports.createProject,
     getProjects: exports.getProjects,
@@ -224,5 +260,7 @@ module.exports = {
     acceptInvitation: exports.acceptInvitation,
     getProjectInvitations: exports.getProjectInvitations,
     cancelInvitation: exports.cancelInvitation,
-    getProjectActivities: exports.getProjectActivities
+    getProjectActivities: exports.getProjectActivities,
+    archiveProject: exports.archiveProject,
+    unarchiveProject: exports.unarchiveProject
 };

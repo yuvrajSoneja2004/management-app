@@ -8,6 +8,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Lazy load route components for code splitting
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const ProjectBoard = lazy(() => import('./pages/ProjectBoard'));
 const AcceptInvitation = lazy(() => import('./pages/AcceptInvitation'));
@@ -21,6 +23,8 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/invitations/:token/accept" element={<AcceptInvitation />} />
 
             <Route element={<ProtectedRoute />}>

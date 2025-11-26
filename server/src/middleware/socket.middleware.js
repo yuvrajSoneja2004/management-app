@@ -18,14 +18,24 @@ const socketAuthMiddleware = async (socket, next) => {
         // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+        // Fetch user details to get username
+        const authRepository = require('../modules/auth/auth.repository');
+        const user = await authRepository.findById(decoded.id);
+
+        if (!user) {
+            return next(new Error('Authentication error: User not found'));
+        }
+
         // Attach user info to socket
         socket.userId = decoded.id;
+        socket.username = user.username;
         socket.user = {
             id: decoded.id,
-            email: decoded.email
+            email: decoded.email,
+            username: user.username
         };
 
-        logger.info(`Socket authenticated: User ${decoded.id}, Socket ID: ${socket.id}`);
+        logger.info(`Socket authenticated: User ${decoded.id} (${user.username}), Socket ID: ${socket.id}`);
         next();
     } catch (error) {
         logger.error(`Socket authentication failed: ${error.message}. Socket ID: ${socket.id}`);
