@@ -324,9 +324,10 @@ class TaskService {
      * @param {Array<String>} taskIds - Task IDs
      * @param {String} status - New status
      * @param {String} userId - User ID
+     * @param {Object} io - Socket.io instance
      * @returns {Promise<Object>} Update result
      */
-    async bulkUpdateStatus(taskIds, status, userId) {
+    async bulkUpdateStatus(taskIds, status, userId, io) {
         if (!taskIds || !Array.isArray(taskIds) || taskIds.length === 0) {
             throw new Error('taskIds array is required');
         }
@@ -349,6 +350,9 @@ class TaskService {
         // Update all tasks
         await taskRepository.bulkUpdate(taskIds, { status, updatedBy: userId });
 
+        // Get updated tasks for socket emission
+        const updatedTasks = await taskRepository.findByIds(taskIds);
+
         // Log activity for each project
         const projectIds = [...new Set(tasks.map(t => t.project.toString()))];
         for (const projectId of projectIds) {
@@ -357,6 +361,15 @@ class TaskService {
                 status,
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
+
+            // Emit socket events for each updated task in this project
+            if (io) {
+                const projectTasks = updatedTasks.filter(t => t.project.toString() === projectId);
+                projectTasks.forEach(task => {
+                    io.to(`project:${projectId}`).emit('taskUpdated', task);
+                });
+            }
+
             // Invalidate cache for each affected project
             await cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
@@ -369,9 +382,10 @@ class TaskService {
      * @param {Array<String>} taskIds - Task IDs
      * @param {Array<String>} assigneeIds - Assignee IDs
      * @param {String} userId - User ID
+     * @param {Object} io - Socket.io instance
      * @returns {Promise<Object>} Update result
      */
-    async bulkAssign(taskIds, assigneeIds, userId) {
+    async bulkAssign(taskIds, assigneeIds, userId, io) {
         if (!taskIds || !Array.isArray(taskIds) || taskIds.length === 0) {
             throw new Error('taskIds array is required');
         }
@@ -394,6 +408,9 @@ class TaskService {
         // Update all tasks
         await taskRepository.bulkUpdate(taskIds, { assignees: assigneeIds, updatedBy: userId });
 
+        // Get updated tasks for socket emission
+        const updatedTasks = await taskRepository.findByIds(taskIds);
+
         // Log activity for each project
         const projectIds = [...new Set(tasks.map(t => t.project.toString()))];
         for (const projectId of projectIds) {
@@ -402,6 +419,15 @@ class TaskService {
                 assigneeCount: assigneeIds.length,
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
+
+            // Emit socket events for each updated task in this project
+            if (io) {
+                const projectTasks = updatedTasks.filter(t => t.project.toString() === projectId);
+                projectTasks.forEach(task => {
+                    io.to(`project:${projectId}`).emit('taskUpdated', task);
+                });
+            }
+
             // Invalidate cache for each affected project
             await cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }
@@ -413,9 +439,10 @@ class TaskService {
      * Bulk delete tasks
      * @param {Array<String>} taskIds - Task IDs
      * @param {String} userId - User ID
+     * @param {Object} io - Socket.io instance
      * @returns {Promise<Object>} Delete result
      */
-    async bulkDelete(taskIds, userId) {
+    async bulkDelete(taskIds, userId, io) {
         if (!taskIds || !Array.isArray(taskIds) || taskIds.length === 0) {
             throw new Error('taskIds array is required');
         }
@@ -435,18 +462,31 @@ class TaskService {
             }
         }
 
-        // Store project IDs for activity logging
+        // Store project IDs and task IDs for socket emission
         const projectIds = [...new Set(tasks.map(t => t.project.toString()))];
+        const taskIdsToDelete = tasks.map(t => t._id.toString());
 
         // Delete all tasks
         await taskRepository.bulkDelete(taskIds);
 
-        // Log activity for each project
+        // Log activity and emit socket events for each project
         for (const projectId of projectIds) {
             await logActivity(projectId, userId, 'task_deleted', {
                 action: 'bulk_delete',
                 taskCount: tasks.filter(t => t.project.toString() === projectId).length
             });
+
+            // Emit socket events for each deleted task in this project
+            if (io) {
+                const projectTaskIds = tasks
+                    .filter(t => t.project.toString() === projectId)
+                    .map(t => t._id.toString());
+
+                projectTaskIds.forEach(taskId => {
+                    io.to(`project:${projectId}`).emit('taskDeleted', { _id: taskId });
+                });
+            }
+
             // Invalidate cache for each affected project
             await cacheService.deletePattern(`tasks:project:${projectId}:*`);
         }

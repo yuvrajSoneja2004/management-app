@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 
 const path = require('path');
 
-const logoPath = path.join(__dirname, '../../../client/src/assets/imgs/email.png');
+const logoPath = path.join(__dirname, '../../assets/imgs/email.png');
 
 const emailTemplates = {
     invitation: (data) => {
@@ -112,7 +112,7 @@ The Jello Team 🐢
         return {
             from: `"Jello Security" <${process.env.EMAIL_FROM}>`,
             to: email,
-            subject: 'Reset your Jello password 🔐',
+            subject: 'Reset your Jello password',
             attachments: [{
                 filename: 'email.png',
                 path: logoPath,
@@ -205,11 +205,11 @@ const emailWorker = new Worker(
 
             const mailOptions = template(data);
             const info = await transporter.sendMail(mailOptions);
-            console.log(`Email sent successfully: ${job.id}`, info.messageId);
+            console.log(`Email sent successfully: ${job.id} `, info.messageId);
 
             return { success: true, messageId: info.messageId };
         } catch (error) {
-            console.error(`Failed to send email ${job.id}:`, error);
+            console.error(`Failed to send email ${job.id}: `, error);
             throw error;
         }
     },
@@ -228,7 +228,7 @@ emailWorker.on('completed', (job) => {
 });
 
 emailWorker.on('failed', (job, err) => {
-    console.error(`Email job ${job?.id} failed:`, err.message);
+    console.error(`Email job ${job?.id} failed: `, err.message);
 });
 
 emailWorker.on('error', (err) => {

@@ -171,11 +171,12 @@ const ProjectBoard = () => {
     };
 
     const handleMyTasksToggle = () => {
+        if (!user) return;
         const newState = !showMyTasks;
         setShowMyTasks(newState);
         setFilters(prev => ({
             ...prev,
-            assignee: newState ? user._id : ''
+            assignee: newState ? (user._id || user.id) : ''
         }));
     };
 

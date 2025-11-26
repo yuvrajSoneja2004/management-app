@@ -89,7 +89,7 @@ exports.bulkUpdateStatus = async (req, res, next) => {
             return res.status(400).json({ message: 'status is required' });
         }
 
-        const result = await taskService.bulkUpdateStatus(taskIds, status, req.user._id);
+        const result = await taskService.bulkUpdateStatus(taskIds, status, req.user._id, req.app.get('io'));
         res.json(result);
     } catch (error) {
         if (error.message === 'taskIds array is required') {
@@ -116,7 +116,7 @@ exports.bulkAssign = async (req, res, next) => {
             return res.status(400).json({ message: 'assigneeIds array is required' });
         }
 
-        const result = await taskService.bulkAssign(taskIds, assigneeIds, req.user._id);
+        const result = await taskService.bulkAssign(taskIds, assigneeIds, req.user._id, req.app.get('io'));
         res.json(result);
     } catch (error) {
         if (error.message === 'taskIds array is required') {
@@ -138,7 +138,7 @@ exports.bulkAssign = async (req, res, next) => {
 exports.bulkDelete = async (req, res, next) => {
     try {
         const { taskIds } = req.body;
-        const result = await taskService.bulkDelete(taskIds, req.user._id);
+        const result = await taskService.bulkDelete(taskIds, req.user._id, req.app.get('io'));
         res.json(result);
     } catch (error) {
         if (error.message === 'taskIds array is required') {

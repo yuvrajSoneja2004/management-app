@@ -1382,3 +1382,7 @@
 {"level":"info","message":"Socket ICsm-aABlbh8Ghu-AAAJ left project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
 {"level":"info","message":"Socket dbBoq7gNYuBxuWjkAAAI joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
 {"level":"info","message":"Socket ICsm-aABlbh8Ghu-AAAJ joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:56:57"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 19:45:51"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 19:45:51"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 19:45:51"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 19:45:51"}
