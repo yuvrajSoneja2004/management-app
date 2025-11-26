@@ -19,6 +19,9 @@ const seedRoutes = require('./routes/seed.routes');
 
 const app = express();
 
+// Trust proxy - Required when behind Nginx/reverse proxy
+app.set('trust proxy', 1);
+
 // Security Middleware
 // Helmet - Security headers with enhanced configuration
 app.use(helmet({
