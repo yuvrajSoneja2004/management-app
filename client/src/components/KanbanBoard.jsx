@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useGetTasksQuery } from '@/store/api/tasksApi';
 import KanbanColumn from './KanbanColumn';
 
@@ -21,9 +21,6 @@ const KanbanBoard = ({ projectId, filters, onTaskClick, onAddTask, isViewer, sel
         search: filters.search,
         sortBy: filters.sortBy,
         order: filters.order,
-        // If assignee filter is set, pass it (backend expects 'assignee' or 'assignees' depending on implementation, 
-        // service says: if (queryParams.assignee) filters.assignees = queryParams.assignee;)
-        // So we pass 'assignee'
         assignee: filters.assignee
     };
 
@@ -60,9 +57,38 @@ const KanbanBoard = ({ projectId, filters, onTaskClick, onAddTask, isViewer, sel
     };
 
     const handlePageChange = (status, newPage) => {
+        setColumnPages(prev => ({
+            ...prev,
+            [status]: newPage
+        }));
+    };
+
+    // Filter statuses based on status filter
+    const visibleStatuses = filters.status ? [filters.status] : STATUSES;
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
+            {visibleStatuses.map((status) => {
+                const query = queries[status];
+                return (
+                    <KanbanColumn
+                        key={status}
+                        title={status}
+                        status={status}
+                        tasks={query.data?.tasks || []}
+                        isLoading={query.isLoading}
+                        pagination={query.data?.pagination}
+                        currentPage={columnPages[status]}
+                        onPageChange={(page) => handlePageChange(status, page)}
+                        onTaskClick={onTaskClick}
+                        onAddTask={onAddTask}
+                        isViewer={isViewer}
+                        selectedTasks={selectedTasks}
+                        onTaskSelect={onTaskSelect}
+                    />
                 );
             })}
-        </div >
+        </div>
     );
 };
 
