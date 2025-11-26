@@ -11,7 +11,7 @@ const useSocketStore = create((set, get) => ({
 
     // Initialize socket connection
     connect: (token) => {
-        const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000', {
+        const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://apiJello.yuvrajsoneja.in', {
             auth: { token },
             reconnection: true,
             reconnectionDelay: 1000,

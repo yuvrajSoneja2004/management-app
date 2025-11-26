@@ -3,7 +3,7 @@ import useAuthStore from '../store/authStore';
 import { toast } from 'sonner';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'https://apiJello.yuvrajsoneja.in/api',
     withCredentials: true,
 });
 
@@ -26,7 +26,7 @@ api.interceptors.response.use(
 
             try {
                 // Try to refresh the token
-                const res = await axios.get('http://localhost:5000/api/auth/refresh', {
+                const res = await axios.get('https://apiJello.yuvrajsoneja.in/api/auth/refresh', {
                     withCredentials: true
                 });
 

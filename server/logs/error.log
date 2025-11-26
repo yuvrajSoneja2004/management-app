@@ -255,3 +255,7 @@
 {"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: c1AjNnm35C8UW7MjAAAG","service":"project-management-api","timestamp":"2025-11-26 16:49:59"}
 {"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: imP6EvPthrcSgwuRAAAH","service":"project-management-api","timestamp":"2025-11-26 16:49:59"}
 {"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: HrrRwQLdzBo4R7UEAAAa","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: Gx8AQrq6XX9gpAc5AAAO","service":"project-management-api","timestamp":"2025-11-26 19:23:41"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: 66C3_PpS2u2OZiaGAAAP","service":"project-management-api","timestamp":"2025-11-26 19:23:41"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: 5fwTYyppLTDpsaVKAAAS","service":"project-management-api","timestamp":"2025-11-26 19:24:04"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: Mih3HzqmPNeREurFAAAT","service":"project-management-api","timestamp":"2025-11-26 19:24:04"}
