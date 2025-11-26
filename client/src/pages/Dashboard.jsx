@@ -24,7 +24,8 @@ const Dashboard = () => {
 
     const { data, isLoading, error } = useGetProjectsQuery({
         page: currentPage,
-        limit: projectsPerPage
+        limit: projectsPerPage,
+        status: 'Active'
     });
     const [createProject] = useCreateProjectMutation();
     const [archiveProject] = useArchiveProjectMutation();
@@ -226,6 +227,15 @@ const Dashboard = () => {
                                     </form>
                                 </DialogContent>
                             </Dialog>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigate('/archived')}
+                                className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
+                            >
+                                <Archive className="h-4 w-4 mr-2" />
+                                Archived
+                            </Button>
                             <Button
                                 variant="outline"
                                 size="sm"

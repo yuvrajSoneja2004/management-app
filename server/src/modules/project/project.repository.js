@@ -13,15 +13,22 @@ class ProjectRepository extends BaseRepository {
     /**
      * Find projects by user membership
      * @param {String} userId - User ID
+     * @param {Object} options - Query options
      * @returns {Promise<Array>} Array of projects
      */
     async findByMember(userId, options = {}) {
-        const { page = 1, limit = 20, lean = true } = options;
+        const { page = 1, limit = 20, lean = true, status } = options;
         const skip = (page - 1) * limit;
 
-        let query = this.model.find({
+        const queryObj = {
             'members.user': userId
-        })
+        };
+
+        if (status) {
+            queryObj.status = status;
+        }
+
+        let query = this.model.find(queryObj)
             .select('name description status owner members tags createdAt updatedAt')
             .sort({ updatedAt: -1 })
             .skip(skip)
@@ -37,12 +44,19 @@ class ProjectRepository extends BaseRepository {
     /**
      * Count projects by user membership
      * @param {String} userId - User ID
+     * @param {Object} options - Query options
      * @returns {Promise<Number>} Count
      */
-    async countByMember(userId) {
-        return await this.model.countDocuments({
+    async countByMember(userId, options = {}) {
+        const queryObj = {
             'members.user': userId
-        });
+        };
+
+        if (options.status) {
+            queryObj.status = options.status;
+        }
+
+        return await this.model.countDocuments(queryObj);
     }
 
     /**

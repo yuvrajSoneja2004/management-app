@@ -75,7 +75,9 @@ const ProjectBoard = () => {
 
     // Get user role
     const userRole = currentProject?.members?.find(m => m.user?._id === user?._id || m.user === user?._id)?.role || 'Viewer';
-    const isViewer = userRole?.toLowerCase() === 'viewer';
+    const isArchived = currentProject?.status === 'Archived';
+    // Treat as viewer if role is Viewer OR project is archived
+    const isViewer = (userRole?.toLowerCase() === 'viewer') || isArchived;
 
     useEffect(() => {
         if (id) {
@@ -90,7 +92,8 @@ const ProjectBoard = () => {
 
     const onSubmitTask = async (data) => {
         if (isViewer) {
-            toast.error("Permission Denied", { description: "Viewers cannot create tasks." });
+            const message = isArchived ? "Project is archived." : "Viewers cannot create tasks.";
+            toast.error("Permission Denied", { description: message });
             return;
         }
         try {
@@ -112,7 +115,8 @@ const ProjectBoard = () => {
 
     const handleStatusChange = async (taskId, newStatus) => {
         if (isViewer) {
-            toast.error("Permission Denied", { description: "Viewers cannot update task status." });
+            const message = isArchived ? "Project is archived." : "Viewers cannot update task status.";
+            toast.error("Permission Denied", { description: message });
             return;
         }
         try {

@@ -26,8 +26,9 @@ exports.getProjects = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
+        const status = req.query.status;
 
-        const result = await projectService.getUserProjects(req.user._id, { page, limit });
+        const result = await projectService.getUserProjects(req.user._id, { page, limit, status });
         res.json(result);
     } catch (error) {
         next(error);

@@ -46,12 +46,13 @@ class ProjectService {
      * @returns {Promise<Object>} Projects with pagination
      */
     async getUserProjects(userId, options = {}) {
-        const { page = 1, limit = 20 } = options;
+        const { page = 1, limit = 20, status } = options;
         const maxLimit = 100;
         const safeLimit = Math.min(parseInt(limit) || 20, maxLimit);
         const safePage = parseInt(page) || 1;
 
-        const cacheKey = `projects:user:${userId}:page:${safePage}:limit:${safeLimit}`;
+        // Include status in cache key if present
+        const cacheKey = `projects:user:${userId}:page:${safePage}:limit:${safeLimit}${status ? `:status:${status}` : ''}`;
 
         // Check cache
         const cached = await cacheService.get(cacheKey);
@@ -60,8 +61,13 @@ class ProjectService {
         }
 
         // Fetch from database
-        const projects = await projectRepository.findByMember(userId, { page: safePage, limit: safeLimit, lean: true });
-        const total = await projectRepository.countByMember(userId);
+        const projects = await projectRepository.findByMember(userId, {
+            page: safePage,
+            limit: safeLimit,
+            lean: true,
+            status
+        });
+        const total = await projectRepository.countByMember(userId, { status });
 
         const result = {
             projects,

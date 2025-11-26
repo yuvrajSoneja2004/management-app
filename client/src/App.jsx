@@ -11,6 +11,7 @@ const Register = lazy(() => import('./pages/Register'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ArchivedProjects = lazy(() => import('./pages/ArchivedProjects'));
 const ProjectBoard = lazy(() => import('./pages/ProjectBoard'));
 const AcceptInvitation = lazy(() => import('./pages/AcceptInvitation'));
 
@@ -29,6 +30,7 @@ function App() {
 
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/archived" element={<ArchivedProjects />} />
               <Route path="/projects/:id" element={<ProjectBoard />} />
             </Route>
 

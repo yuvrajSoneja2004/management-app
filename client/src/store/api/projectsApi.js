@@ -4,7 +4,11 @@ export const projectsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // Get all projects with pagination
         getProjects: builder.query({
-            query: ({ page = 1, limit = 20 } = {}) => `/projects?page=${page}&limit=${limit}`,
+            query: ({ page = 1, limit = 20, status } = {}) => {
+                let url = `/projects?page=${page}&limit=${limit}`;
+                if (status) url += `&status=${status}`;
+                return url;
+            },
             providesTags: (result) =>
                 result?.projects
                     ? [

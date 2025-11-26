@@ -8,7 +8,7 @@ const checkRole = (allowedRoles) => {
             // Determine projectId source (body, params, or query)
             if (req.params.projectId) {
                 projectId = req.params.projectId;
-            } else if (req.body.projectId) {
+            } else if (req.body && req.body.projectId) {
                 projectId = req.body.projectId;
             } else if (req.params.id) {
                 // If accessing a resource by ID (like task or project), we might need to fetch it to get the project ID
