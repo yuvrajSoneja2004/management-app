@@ -21,7 +21,7 @@ Jello is a real-time collaborative project management platform built with the ME
 
 ### Live Demo
 
-- **Frontend:** [https://jello.yuvrajsoneja.in](https://jello.yuvrajsoneja.in)
+- **Frontend:** [https://jelloclient.netlify.app](https://jelloclient.netlify.app)
 - **Backend API:** [https://apiJello.yuvrajsoneja.in](https://apiJello.yuvrajsoneja.in)
 - **API Documentation:** [https://apiJello.yuvrajsoneja.in/api-docs](https://apiJello.yuvrajsoneja.in/api-docs)
 
