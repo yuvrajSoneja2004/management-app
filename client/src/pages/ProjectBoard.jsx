@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDispatch } from 'react-redux';
 import { useGetProjectQuery } from '@/store/api/projectsApi';
 import {
     useGetTasksQuery,
@@ -11,6 +12,7 @@ import {
     useBulkAssignMutation,
     useBulkDeleteMutation
 } from '@/store/api/tasksApi';
+import { tasksApi } from '@/store/api/tasksApi';
 import useAuthStore from '../store/authStore';
 import useSocket from '@/hooks/useSocket';
 import useRealtimeUpdates from '@/hooks/useRealtimeUpdates';
@@ -42,6 +44,7 @@ const ProjectBoard = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const dispatch = useDispatch();
 
     // RTK Query hooks
     const { data: projectData, isLoading: isLoadingProject } = useGetProjectQuery(id);
@@ -543,6 +546,8 @@ const ProjectBoard = () => {
 
                             {!isViewer && <FileUpload taskId={selectedTask?._id} onUploadComplete={(updatedTask) => {
                                 setSelectedTask(updatedTask);
+                                // Invalidate tasks cache to refetch with new attachments
+                                dispatch(tasksApi.util.invalidateTags([{ type: 'Task', id: updatedTask._id }]));
                             }} />}
                             {isViewer && <p className="text-sm text-gray-500 italic text-center">Viewers cannot upload files.</p>}
                         </div>
