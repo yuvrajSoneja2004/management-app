@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useGetTasksQuery } from '@/store/api/tasksApi';
 import KanbanColumn from './KanbanColumn';
 
 const STATUSES = ['Todo', 'In Progress', 'Review', 'Completed'];
 const TASKS_PER_PAGE = 10;
 
-const KanbanBoard = ({ projectId, onTaskClick, onAddTask, isViewer, selectedTasks, onTaskSelect }) => {
+const KanbanBoard = ({ projectId, filters, onTaskClick, onAddTask, isViewer, selectedTasks, onTaskSelect }) => {
     // Separate pagination state for each column
     const [columnPages, setColumnPages] = useState({
         'Todo': 1,
@@ -14,33 +14,42 @@ const KanbanBoard = ({ projectId, onTaskClick, onAddTask, isViewer, selectedTask
         'Completed': 1
     });
 
+    const queryParams = {
+        projectId,
+        limit: TASKS_PER_PAGE,
+        priority: filters.priority,
+        search: filters.search,
+        sortBy: filters.sortBy,
+        order: filters.order,
+        // If assignee filter is set, pass it (backend expects 'assignee' or 'assignees' depending on implementation, 
+        // service says: if (queryParams.assignee) filters.assignees = queryParams.assignee;)
+        // So we pass 'assignee'
+        assignee: filters.assignee
+    };
+
     // Fetch tasks for each status separately
     const todoQuery = useGetTasksQuery({
-        projectId,
+        ...queryParams,
         status: 'Todo',
-        page: columnPages['Todo'],
-        limit: TASKS_PER_PAGE
+        page: columnPages['Todo']
     });
 
     const inProgressQuery = useGetTasksQuery({
-        projectId,
+        ...queryParams,
         status: 'In Progress',
-        page: columnPages['In Progress'],
-        limit: TASKS_PER_PAGE
+        page: columnPages['In Progress']
     });
 
     const reviewQuery = useGetTasksQuery({
-        projectId,
+        ...queryParams,
         status: 'Review',
-        page: columnPages['Review'],
-        limit: TASKS_PER_PAGE
+        page: columnPages['Review']
     });
 
     const completedQuery = useGetTasksQuery({
-        projectId,
+        ...queryParams,
         status: 'Completed',
-        page: columnPages['Completed'],
-        limit: TASKS_PER_PAGE
+        page: columnPages['Completed']
     });
 
     const queries = {

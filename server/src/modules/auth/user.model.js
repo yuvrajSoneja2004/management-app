@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Indexes for performance
-userSchema.index({ email: 1 }, { unique: true });
+
 userSchema.index({ username: 1 }, { unique: true });
 
 // Hash password before saving

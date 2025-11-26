@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import useProjectStore from '../store/projectStore';
+import { useMemo } from 'react';
+import { useGetTasksQuery } from '@/store/api/tasksApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Loader2, CheckCircle2, ListTodo, Clock } from 'lucide-react';
@@ -7,13 +7,32 @@ import { Loader2, CheckCircle2, ListTodo, Clock } from 'lucide-react';
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const ProjectStatistics = ({ projectId }) => {
-    const { projectStats, fetchProjectStats, isLoading } = useProjectStore();
+    // Fetch tasks for each status
+    const { data: todoData, isLoading: loadingTodo } = useGetTasksQuery({ projectId, status: 'Todo', page: 1, limit: 100 });
+    const { data: inProgressData, isLoading: loadingProgress } = useGetTasksQuery({ projectId, status: 'In Progress', page: 1, limit: 100 });
+    const { data: reviewData, isLoading: loadingReview } = useGetTasksQuery({ projectId, status: 'Review', page: 1, limit: 100 });
+    const { data: completedData, isLoading: loadingCompleted } = useGetTasksQuery({ projectId, status: 'Completed', page: 1, limit: 100 });
 
-    useEffect(() => {
-        fetchProjectStats(projectId);
-    }, [projectId, fetchProjectStats]);
+    const isLoading = loadingTodo || loadingProgress || loadingReview || loadingCompleted;
 
-    if (isLoading && !projectStats) {
+    // Calculate stats from the data
+    const stats = useMemo(() => {
+        const taskDistribution = {
+            'Todo': todoData?.tasks?.length || 0,
+            'In Progress': inProgressData?.tasks?.length || 0,
+            'Review': reviewData?.tasks?.length || 0,
+            'Completed': completedData?.tasks?.length || 0
+        };
+
+        const totalTasks = Object.values(taskDistribution).reduce((sum, count) => sum + count, 0);
+        const progress = totalTasks > 0
+            ? Math.round((taskDistribution['Completed'] / totalTasks) * 100)
+            : 0;
+
+        return { taskDistribution, totalTasks, progress };
+    }, [todoData, inProgressData, reviewData, completedData]);
+
+    if (isLoading) {
         return (
             <div className="flex justify-center items-center h-64">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
@@ -21,9 +40,7 @@ const ProjectStatistics = ({ projectId }) => {
         );
     }
 
-    if (!projectStats) return null;
-
-    const { taskDistribution, totalTasks, progress } = projectStats;
+    const { taskDistribution, totalTasks, progress } = stats;
 
     const pieData = Object.keys(taskDistribution).map(status => ({
         name: status,

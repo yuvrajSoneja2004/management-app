@@ -1049,3 +1049,314 @@
 {"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 13:58:33"}
 {"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 13:58:33"}
 {"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 13:58:33"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 13:59:00"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 13:59:00"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 13:59:00"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 13:59:00"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: b3xlSrq0uKhLw8jBAAAC","service":"project-management-api","timestamp":"2025-11-26 14:02:33"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: 1TmuhmhAt4xPbTphAAAD","service":"project-management-api","timestamp":"2025-11-26 14:02:33"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: e1hvo0AdcjZazx3FAAAG","service":"project-management-api","timestamp":"2025-11-26 14:14:37"}
+{"level":"info","message":"Client connected: e1hvo0AdcjZazx3FAAAG, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 14:14:37"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: H-vKZxk6-efwTH8cAAAH","service":"project-management-api","timestamp":"2025-11-26 14:14:37"}
+{"level":"info","message":"Client connected: H-vKZxk6-efwTH8cAAAH, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 14:14:37"}
+{"level":"info","message":"Socket H-vKZxk6-efwTH8cAAAH joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 14:14:37"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: bz6_11HVjYbQ-04hAAAK","service":"project-management-api","timestamp":"2025-11-26 14:14:43"}
+{"level":"info","message":"Client connected: bz6_11HVjYbQ-04hAAAK, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 14:14:43"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: zOCCMXq77-CbgJsiAAAL","service":"project-management-api","timestamp":"2025-11-26 14:14:43"}
+{"level":"info","message":"Client connected: zOCCMXq77-CbgJsiAAAL, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 14:14:43"}
+{"level":"info","message":"Socket zOCCMXq77-CbgJsiAAAL joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 14:14:43"}
+{"level":"info","message":"Client disconnected: zOCCMXq77-CbgJsiAAAL, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 14:14:58"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: QNiA6Ludt3YSjmQ4AAAO","service":"project-management-api","timestamp":"2025-11-26 14:19:18"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: CLpN9-vodGDgdwryAAAP","service":"project-management-api","timestamp":"2025-11-26 14:19:18"}
+{"level":"info","message":"Client disconnected: bz6_11HVjYbQ-04hAAAK, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 14:26:02"}
+{"level":"info","message":"Client disconnected: H-vKZxk6-efwTH8cAAAH, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 14:26:05"}
+{"level":"info","message":"Client disconnected: e1hvo0AdcjZazx3FAAAG, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 14:26:06"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: yVOMXJyB5syNt-v3AAAT","service":"project-management-api","timestamp":"2025-11-26 14:26:08"}
+{"level":"info","message":"Client connected: yVOMXJyB5syNt-v3AAAT, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 14:26:08"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: MV9lnvRTeDms7ukQAAAS","service":"project-management-api","timestamp":"2025-11-26 14:26:08"}
+{"level":"info","message":"Client connected: MV9lnvRTeDms7ukQAAAS, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 14:26:08"}
+{"level":"info","message":"Socket yVOMXJyB5syNt-v3AAAT joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 14:26:08"}
+{"level":"info","message":"Client disconnected: yVOMXJyB5syNt-v3AAAT, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 14:26:16"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 14:32:03"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 14:32:03"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 14:32:03"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 14:32:03"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: cv57PUR0FsvOnFsgAAAB","service":"project-management-api","timestamp":"2025-11-26 14:32:03"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: J-mb8FiXJYDvCr5dAAAF","service":"project-management-api","timestamp":"2025-11-26 14:33:03"}
+{"level":"info","message":"Client connected: J-mb8FiXJYDvCr5dAAAF, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 14:33:03"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 2GGbqFIbkkySBl0eAAAE","service":"project-management-api","timestamp":"2025-11-26 14:33:03"}
+{"level":"info","message":"Client connected: 2GGbqFIbkkySBl0eAAAE, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 14:33:03"}
+{"level":"info","message":"Socket J-mb8FiXJYDvCr5dAAAF joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 14:33:03"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 14:34:55"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 14:34:55"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 14:34:55"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 14:34:55"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: pk_5fqc2CN5pNyWtAAAC","service":"project-management-api","timestamp":"2025-11-26 14:34:55"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: ErHB37BAeLtQwGTNAAAD","service":"project-management-api","timestamp":"2025-11-26 14:34:55"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: MsUxONYbWpgLUBeRAAAG","service":"project-management-api","timestamp":"2025-11-26 14:58:11"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: Q3y7lm0C4sEJlbPoAAAH","service":"project-management-api","timestamp":"2025-11-26 14:58:11"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: vqeaawQMvFqgjUKyAAAK","service":"project-management-api","timestamp":"2025-11-26 14:58:19"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: yNaEjfRCauiVX8zRAAAL","service":"project-management-api","timestamp":"2025-11-26 14:58:19"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: 16G50tEm10g6aq0eAAAO","service":"project-management-api","timestamp":"2025-11-26 14:58:35"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: cUjrYKMNJBZvAl8uAAAP","service":"project-management-api","timestamp":"2025-11-26 14:58:35"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: m84hQvd-SWLRkFiuAAAS","service":"project-management-api","timestamp":"2025-11-26 15:38:40"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: Yv8Y2M6vyeSpcf7rAAAT","service":"project-management-api","timestamp":"2025-11-26 15:38:40"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: ODLGxvRMcjdOJydbAAAW","service":"project-management-api","timestamp":"2025-11-26 15:39:18"}
+{"level":"info","message":"Client connected: ODLGxvRMcjdOJydbAAAW, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:39:18"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: MzTrP17g9VsUaW9tAAAX","service":"project-management-api","timestamp":"2025-11-26 15:39:18"}
+{"level":"info","message":"Client connected: MzTrP17g9VsUaW9tAAAX, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:39:18"}
+{"level":"info","message":"Socket MzTrP17g9VsUaW9tAAAX joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:39:18"}
+{"level":"info","message":"Client disconnected: MzTrP17g9VsUaW9tAAAX, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:39:52"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: GPs8J023PZvLzvO7AAAa","service":"project-management-api","timestamp":"2025-11-26 15:39:54"}
+{"level":"info","message":"Client connected: GPs8J023PZvLzvO7AAAa, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:39:54"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: iGuKBtKHlrOqAujgAAAb","service":"project-management-api","timestamp":"2025-11-26 15:39:54"}
+{"level":"info","message":"Client connected: iGuKBtKHlrOqAujgAAAb, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:39:54"}
+{"level":"info","message":"Socket iGuKBtKHlrOqAujgAAAb joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:39:54"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: Yym2sL_U2l66jFTzAAAe","service":"project-management-api","timestamp":"2025-11-26 15:39:56"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: 3abEm5lhXTCQFYOEAAAf","service":"project-management-api","timestamp":"2025-11-26 15:39:56"}
+{"level":"info","message":"Client disconnected: iGuKBtKHlrOqAujgAAAb, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:40:01"}
+{"level":"info","message":"Client disconnected: ODLGxvRMcjdOJydbAAAW, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:40:02"}
+{"level":"info","message":"Client disconnected: GPs8J023PZvLzvO7AAAa, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:40:02"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: Scc_wMYOrepjlKgRAAAj","service":"project-management-api","timestamp":"2025-11-26 15:40:04"}
+{"level":"info","message":"Client connected: Scc_wMYOrepjlKgRAAAj, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:40:04"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: aHEV0KhFQVzf9TJSAAAi","service":"project-management-api","timestamp":"2025-11-26 15:40:04"}
+{"level":"info","message":"Client connected: aHEV0KhFQVzf9TJSAAAi, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:40:04"}
+{"level":"info","message":"Socket Scc_wMYOrepjlKgRAAAj joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:40:04"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: 7cmOzwEo-dt9vS3yAAAm","service":"project-management-api","timestamp":"2025-11-26 15:40:06"}
+{"level":"info","message":"Client connected: 7cmOzwEo-dt9vS3yAAAm, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:40:06"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: LWsiO8NCPDYSMWx7AAAn","service":"project-management-api","timestamp":"2025-11-26 15:40:06"}
+{"level":"info","message":"Client connected: LWsiO8NCPDYSMWx7AAAn, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:40:06"}
+{"level":"info","message":"Socket LWsiO8NCPDYSMWx7AAAn joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:40:06"}
+{"level":"info","message":"Client disconnected: Scc_wMYOrepjlKgRAAAj, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:41:57"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 58eyWp96JtzFHFqtAAAp","service":"project-management-api","timestamp":"2025-11-26 15:41:57"}
+{"level":"info","message":"Client connected: 58eyWp96JtzFHFqtAAAp, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:41:57"}
+{"level":"info","message":"Socket 58eyWp96JtzFHFqtAAAp joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:41:57"}
+{"level":"info","message":"Client disconnected: LWsiO8NCPDYSMWx7AAAn, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:41:57"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: EP4fhGnDizYkgSefAAAt","service":"project-management-api","timestamp":"2025-11-26 15:41:57"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: S3IaxUdUE5xhveNbAAAr","service":"project-management-api","timestamp":"2025-11-26 15:41:58"}
+{"level":"info","message":"Client connected: S3IaxUdUE5xhveNbAAAr, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:41:58"}
+{"level":"info","message":"Socket S3IaxUdUE5xhveNbAAAr joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:41:58"}
+{"level":"info","message":"Client disconnected: 58eyWp96JtzFHFqtAAAp, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:42:28"}
+{"level":"info","message":"Client disconnected: S3IaxUdUE5xhveNbAAAr, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:42:28"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: H3LwIwVWXrPPL0DMAAAv","service":"project-management-api","timestamp":"2025-11-26 15:43:11"}
+{"level":"info","message":"Client connected: H3LwIwVWXrPPL0DMAAAv, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:43:11"}
+{"level":"info","message":"Socket H3LwIwVWXrPPL0DMAAAv joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:43:11"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: sudIDXKkEuI_fzZaAAAz","service":"project-management-api","timestamp":"2025-11-26 15:43:11"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: T2-eypbQ0RJLI70lAAAy","service":"project-management-api","timestamp":"2025-11-26 15:43:11"}
+{"level":"info","message":"Client connected: T2-eypbQ0RJLI70lAAAy, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:43:11"}
+{"level":"info","message":"Socket T2-eypbQ0RJLI70lAAAy joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:43:12"}
+{"level":"info","message":"Client disconnected: H3LwIwVWXrPPL0DMAAAv, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:43:28"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: xpl3TL5bb-1pEkVLAAA3","service":"project-management-api","timestamp":"2025-11-26 15:43:29"}
+{"level":"info","message":"Client connected: xpl3TL5bb-1pEkVLAAA3, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:43:29"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: g_qNPvtd17EvNUfRAAA2","service":"project-management-api","timestamp":"2025-11-26 15:43:29"}
+{"level":"info","message":"Client connected: g_qNPvtd17EvNUfRAAA2, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:43:29"}
+{"level":"info","message":"Socket xpl3TL5bb-1pEkVLAAA3 joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:43:29"}
+{"level":"info","message":"Client disconnected: xpl3TL5bb-1pEkVLAAA3, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:43:32"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 0fFO0Z04xxHrXDNCAAA7","service":"project-management-api","timestamp":"2025-11-26 15:43:34"}
+{"level":"info","message":"Client connected: 0fFO0Z04xxHrXDNCAAA7, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:43:34"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: WTmzdieQjkVJ8Mi4AAA6","service":"project-management-api","timestamp":"2025-11-26 15:43:34"}
+{"level":"info","message":"Client connected: WTmzdieQjkVJ8Mi4AAA6, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:43:34"}
+{"level":"info","message":"Socket 0fFO0Z04xxHrXDNCAAA7 joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:43:34"}
+{"level":"info","message":"Client disconnected: 0fFO0Z04xxHrXDNCAAA7, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:44:29"}
+{"level":"info","message":"Client disconnected: T2-eypbQ0RJLI70lAAAy, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:44:29"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: S-maJXS4TZR4UMDdAAA9","service":"project-management-api","timestamp":"2025-11-26 15:45:25"}
+{"level":"info","message":"Client connected: S-maJXS4TZR4UMDdAAA9, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:45:25"}
+{"level":"info","message":"Socket S-maJXS4TZR4UMDdAAA9 joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:45:25"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: dKw1i10tKlG3TE34AABA","service":"project-management-api","timestamp":"2025-11-26 15:45:25"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: 5PhGPzHM4P9BgqdPAABB","service":"project-management-api","timestamp":"2025-11-26 15:45:26"}
+{"level":"info","message":"Client connected: 5PhGPzHM4P9BgqdPAABB, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 15:45:26"}
+{"level":"info","message":"Socket 5PhGPzHM4P9BgqdPAABB joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:45:26"}
+{"ip":"::1","level":"error","message":"Route /api/projects/6926d1a6870ab546f012813e/statistics not found","method":"GET","service":"project-management-api","stack":"NotFoundError: Route /api/projects/6926d1a6870ab546f012813e/statistics not found\n    at C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\src\\app.js:94:10\n    at Layer.handleRequest (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:342:13)\n    at C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:297:9\n    at processParams (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:582:12)\n    at next (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:291:5)\n    at C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:688:15\n    at next (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:276:14)\n    at protect (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\src\\middleware\\auth.middleware.js:18:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2025-11-26 15:45:59","url":"/api/projects/6926d1a6870ab546f012813e/statistics","userId":"6925f33ce57e102a74603c5f"}
+{"ip":"::1","level":"error","message":"Route /api/projects/6926d1a6870ab546f012813e/statistics not found","method":"GET","service":"project-management-api","stack":"NotFoundError: Route /api/projects/6926d1a6870ab546f012813e/statistics not found\n    at C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\src\\app.js:94:10\n    at Layer.handleRequest (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\lib\\layer.js:152:17)\n    at trimPrefix (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:342:13)\n    at C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:297:9\n    at processParams (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:582:12)\n    at next (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:291:5)\n    at C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:688:15\n    at next (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\index.js:276:14)\n    at protect (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\src\\middleware\\auth.middleware.js:18:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2025-11-26 15:45:59","url":"/api/projects/6926d1a6870ab546f012813e/statistics","userId":"6925f33ce57e102a74603c5f"}
+{"level":"info","message":"Client disconnected: S-maJXS4TZR4UMDdAAA9, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:47:08"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: zWyRHmIdKaI4tJLDAABD","service":"project-management-api","timestamp":"2025-11-26 15:47:10"}
+{"level":"info","message":"Client connected: zWyRHmIdKaI4tJLDAABD, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 15:47:10"}
+{"level":"info","message":"Socket zWyRHmIdKaI4tJLDAABD joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 15:47:10"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: bCDDbZYDDkxzCQDeAAAC","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: -4uTz5H5fu_WsLOxAAAD","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: Kd18ErlmiyUxRkpUAAAF","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: OXW74YdrWzB3mqhPAAAH","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: sDZlU3SU16BU1N9HAAAJ","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: He4doaEle1YmliLRAAAL","service":"project-management-api","timestamp":"2025-11-26 15:55:37"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 15:56:28"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 15:56:28"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 15:56:28"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 15:56:28"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 15:56:30"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 15:56:30"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 15:56:30"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 15:56:30"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 15:57:37"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 15:57:37"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 15:57:37"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 15:57:37"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 15:57:50"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 15:57:50"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 15:57:50"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 15:57:50"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:00:15"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:00:15"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:00:15"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:00:15"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:00:26"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:00:26"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:00:26"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:00:26"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:00:49"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:00:49"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:00:49"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:00:49"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:28:43"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:28:43"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:28:43"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:28:43"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:29:15"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:29:15"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:29:15"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:29:15"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:29:49"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:29:49"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:29:49"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:29:49"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:30:14"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:30:14"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:30:14"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:30:14"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 6p3NHE06kN4qFn2lAAAE","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Client connected: 6p3NHE06kN4qFn2lAAAE, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: AVzja_Lz5jEtAwJfAAAF","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Client connected: AVzja_Lz5jEtAwJfAAAF, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: UWUA58ZDKJQ6eeYBAAAH","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Client connected: UWUA58ZDKJQ6eeYBAAAH, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: kxNfJRpwmc6qy7SyAAAG","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Client connected: kxNfJRpwmc6qy7SyAAAG, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:30:58"}
+{"level":"info","message":"Socket AVzja_Lz5jEtAwJfAAAF joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:30:59"}
+{"level":"info","message":"Socket UWUA58ZDKJQ6eeYBAAAH joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:30:59"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:32:35"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:32:35"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:32:35"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:32:35"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 2UzfJvfSZhs6KB6aAAAE","service":"project-management-api","timestamp":"2025-11-26 16:32:39"}
+{"level":"info","message":"Client connected: 2UzfJvfSZhs6KB6aAAAE, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:32:39"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: SafHrF1QgjDBouAEAAAF","service":"project-management-api","timestamp":"2025-11-26 16:32:39"}
+{"level":"info","message":"Client connected: SafHrF1QgjDBouAEAAAF, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:32:39"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: qRMRB8igVdWID-4_AAAG","service":"project-management-api","timestamp":"2025-11-26 16:32:39"}
+{"level":"info","message":"Client connected: qRMRB8igVdWID-4_AAAG, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:32:39"}
+{"level":"info","message":"Socket qRMRB8igVdWID-4_AAAG left project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:32:39"}
+{"level":"info","message":"Socket 2UzfJvfSZhs6KB6aAAAE joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:32:40"}
+{"level":"info","message":"Socket qRMRB8igVdWID-4_AAAG joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:32:40"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: MbC4x2ufPj58wUhdAAAH","service":"project-management-api","timestamp":"2025-11-26 16:32:40"}
+{"level":"info","message":"Client connected: MbC4x2ufPj58wUhdAAAH, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:32:40"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:38:14"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:38:14"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:38:14"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:38:14"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:39:14"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:39:14"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:39:14"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:39:14"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:39:24"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:39:24"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:39:24"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:39:24"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:40:09"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:40:09"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:40:09"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:40:09"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:40:37"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:40:37"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:40:37"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:40:37"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:40:54"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:40:54"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:40:54"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:40:54"}
+{"level":"info","message":"SIGINT signal received: closing HTTP server","service":"project-management-api","timestamp":"2025-11-26 16:41:02"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:41:07"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:41:07"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:41:07"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:41:07"}
+{"ip":"::1","level":"error","message":"Validation failed","method":"POST","service":"project-management-api","stack":"ValidationError: Validation failed\n    at handleValidationErrors (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\src\\middleware\\validation.middleware.js:16:15)\n    at Layer.handleRequest (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\router\\lib\\route.js:157:13)\n    at middleware (C:\\Users\\Yash\\Desktop\\Inrerv\\w\\server\\node_modules\\express-validator\\lib\\middlewares\\check.js:16:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2025-11-26 16:42:37","url":"/api/projects","userId":"6925f33ce57e102a74603c5f"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: a1iVtRNIGl27U1f9AAAC","service":"project-management-api","timestamp":"2025-11-26 16:42:54"}
+{"level":"info","message":"Client connected: a1iVtRNIGl27U1f9AAAC, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:42:54"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 8U-n4taBALYexeDPAAAD","service":"project-management-api","timestamp":"2025-11-26 16:42:54"}
+{"level":"info","message":"Client connected: 8U-n4taBALYexeDPAAAD, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:42:54"}
+{"level":"info","message":"Socket 8U-n4taBALYexeDPAAAD joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:42:54"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: eHRuFaH957_HChTCAAAG","service":"project-management-api","timestamp":"2025-11-26 16:43:51"}
+{"level":"info","message":"Client connected: eHRuFaH957_HChTCAAAG, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 16:43:51"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: IRwXgbyBgqiYfXIEAAAH","service":"project-management-api","timestamp":"2025-11-26 16:43:51"}
+{"level":"info","message":"Client connected: IRwXgbyBgqiYfXIEAAAH, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 16:43:51"}
+{"level":"info","message":"Socket IRwXgbyBgqiYfXIEAAAH joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:43:51"}
+{"level":"info","message":"Client disconnected: IRwXgbyBgqiYfXIEAAAH, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 16:44:10"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: CkX2IOUVHeFlP7MMAAAK","service":"project-management-api","timestamp":"2025-11-26 16:44:14"}
+{"level":"info","message":"Client connected: CkX2IOUVHeFlP7MMAAAK, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 16:44:14"}
+{"level":"info","message":"Socket authenticated: User 6925f426e57e102a74603c7b (Jagan), Socket ID: yQC0rp6lDZVGG8a3AAAL","service":"project-management-api","timestamp":"2025-11-26 16:44:15"}
+{"level":"info","message":"Client connected: yQC0rp6lDZVGG8a3AAAL, User: 6925f426e57e102a74603c7b","service":"project-management-api","timestamp":"2025-11-26 16:44:15"}
+{"level":"info","message":"Socket yQC0rp6lDZVGG8a3AAAL joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:44:15"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:49:03"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:49:03"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:49:03"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:49:03"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: 34MutyCM3ToAXktxAAAD","service":"project-management-api","timestamp":"2025-11-26 16:49:03"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: 9U6UYVXy_z6r_jifAAAE","service":"project-management-api","timestamp":"2025-11-26 16:49:03"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: mwzOhSPwOnnHSB6wAAAJ","service":"project-management-api","timestamp":"2025-11-26 16:49:03"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: uUmBdm8_W-1mlfxWAAAF","service":"project-management-api","timestamp":"2025-11-26 16:49:07"}
+{"level":"info","message":"Client connected: uUmBdm8_W-1mlfxWAAAF, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:07"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: Rvtu8AVB-ThygaACAAAH","service":"project-management-api","timestamp":"2025-11-26 16:49:07"}
+{"level":"info","message":"Client connected: Rvtu8AVB-ThygaACAAAH, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:07"}
+{"level":"info","message":"Socket Rvtu8AVB-ThygaACAAAH joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:49:07"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:49:15"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:49:15"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:49:15"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:49:15"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: HRBxRimrfkxQef2tAAAC","service":"project-management-api","timestamp":"2025-11-26 16:49:19"}
+{"level":"info","message":"Client connected: HRBxRimrfkxQef2tAAAC, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:19"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 7gYNNUhKC29DfVUSAAAD","service":"project-management-api","timestamp":"2025-11-26 16:49:19"}
+{"level":"info","message":"Client connected: 7gYNNUhKC29DfVUSAAAD, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:19"}
+{"level":"info","message":"Socket 7gYNNUhKC29DfVUSAAAD joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:49:20"}
+{"level":"info","message":"Socket.io handlers initialized","service":"project-management-api","timestamp":"2025-11-26 16:49:53"}
+{"level":"info","message":"Server running on port 5000","service":"project-management-api","timestamp":"2025-11-26 16:49:53"}
+{"level":"info","message":"Backend server started","service":"project-management-api","timestamp":"2025-11-26 16:49:53"}
+{"level":"info","message":"Environment: development","service":"project-management-api","timestamp":"2025-11-26 16:49:53"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: L5-Qu3YaENDScEwuAAAC","service":"project-management-api","timestamp":"2025-11-26 16:49:56"}
+{"level":"info","message":"Client connected: L5-Qu3YaENDScEwuAAAC, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:56"}
+{"level":"info","message":"Socket L5-Qu3YaENDScEwuAAAC left project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:49:56"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: zt1TEWCIbIsH3-2KAAAD","service":"project-management-api","timestamp":"2025-11-26 16:49:57"}
+{"level":"info","message":"Client connected: zt1TEWCIbIsH3-2KAAAD, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:57"}
+{"level":"info","message":"Socket L5-Qu3YaENDScEwuAAAC joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:49:57"}
+{"level":"info","message":"Client disconnected: L5-Qu3YaENDScEwuAAAC, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:58"}
+{"level":"info","message":"Client disconnected: zt1TEWCIbIsH3-2KAAAD, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:49:58"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: c1AjNnm35C8UW7MjAAAG","service":"project-management-api","timestamp":"2025-11-26 16:49:59"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: imP6EvPthrcSgwuRAAAH","service":"project-management-api","timestamp":"2025-11-26 16:49:59"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 4J_V6RBCOJE8NRHsAAAK","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Client connected: 4J_V6RBCOJE8NRHsAAAK, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: xmdIaeCXOzQzyF4ZAAAL","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Client connected: xmdIaeCXOzQzyF4ZAAAL, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: X2r2D4UDRKMK3Z-oAAAO","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Client connected: X2r2D4UDRKMK3Z-oAAAO, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 6V9bZy4TSSKB8cIjAAAP","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Client connected: 6V9bZy4TSSKB8cIjAAAP, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket xmdIaeCXOzQzyF4ZAAAL joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: beIgshsNKj21RpEdAAAS","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Client connected: beIgshsNKj21RpEdAAAS, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: EV1vA0eXMkLoOhHBAAAT","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Client connected: EV1vA0eXMkLoOhHBAAAT, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket 6V9bZy4TSSKB8cIjAAAP joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Socket EV1vA0eXMkLoOhHBAAAT joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:50:02"}
+{"level":"info","message":"Client disconnected: xmdIaeCXOzQzyF4ZAAAL, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:52:49"}
+{"level":"info","message":"Client disconnected: 6V9bZy4TSSKB8cIjAAAP, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:52:49"}
+{"level":"info","message":"Client disconnected: EV1vA0eXMkLoOhHBAAAT, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:52:49"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: XXsQbBgBSOFY2_0MAAAW","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Client connected: XXsQbBgBSOFY2_0MAAAW, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"error","message":"Socket authentication failed: jwt expired. Socket ID: HrrRwQLdzBo4R7UEAAAa","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: 58It6HIgan_lHom-AAAX","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Client connected: 58It6HIgan_lHom-AAAX, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Socket authenticated: User 6925f33ce57e102a74603c5f (Yuvraj), Socket ID: cdlxM1D3yG8dtxD3AAAb","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Client connected: cdlxM1D3yG8dtxD3AAAb, User: 6925f33ce57e102a74603c5f","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Socket 58It6HIgan_lHom-AAAX joined project 6925f88dd1dffc1d9da8d9ad","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Socket XXsQbBgBSOFY2_0MAAAW joined project 6926e0ad061c588393b1e49c","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}
+{"level":"info","message":"Socket cdlxM1D3yG8dtxD3AAAb joined project 6926d1a6870ab546f012813e","service":"project-management-api","timestamp":"2025-11-26 16:52:50"}

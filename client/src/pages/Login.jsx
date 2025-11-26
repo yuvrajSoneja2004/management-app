@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Mail, Lock, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import siteLogo from '../assets/imgs/site_logo.png';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ const Login = () => {
                 <div className="w-full max-w-md animate-fade-in">
                     <div className="mb-8">
                         <h1 className="text-4xl font-bold mb-2">
-                            Welcome <span className="text-gradient">Back</span>
+                            Welcome to <span className="text-gradient">Jello</span>
                         </h1>
                         <p className="text-muted-foreground">
                             Sign in to continue to your projects
@@ -146,26 +147,14 @@ const Login = () => {
                 <div className="relative z-10 text-white max-w-lg animate-slide-up">
                     <div className="mb-8">
                         <div className="inline-block p-3 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
-                            <svg
-                                className="w-12 h-12"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                                />
-                            </svg>
+                            <img src={siteLogo} alt="Jello Mascot" className="w-24 h-24 object-contain" />
                         </div>
                     </div>
                     <h2 className="text-4xl font-bold mb-4">
-                        Manage Projects with Ease
+                        Manage Projects with Jello
                     </h2>
                     <p className="text-lg text-blue-100 mb-8">
-                        Collaborate with your team in real-time. Track tasks, share files, and stay organized with our modern project management platform.
+                        Collaborate with your team in real-time. Track tasks, share files, and stay organized with Jello's modern platform.
                     </p>
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import registerMascot from '../assets/imgs/registar.png';
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -45,7 +46,7 @@ const Register = () => {
                 <div className="w-full max-w-md animate-fade-in">
                     <div className="mb-8">
                         <h1 className="text-4xl font-bold mb-2">
-                            Get <span className="text-gradient">Started</span>
+                            Join <span className="text-gradient">Jello</span>
                         </h1>
                         <p className="text-muted-foreground">
                             Create your account and start collaborating
@@ -155,26 +156,14 @@ const Register = () => {
                 <div className="relative z-10 text-white max-w-lg animate-slide-up">
                     <div className="mb-8">
                         <div className="inline-block p-3 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
-                            <svg
-                                className="w-12 h-12"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                                />
-                            </svg>
+                            <img src={registerMascot} alt="Jello Mascot" className="w-24 h-24 object-contain" />
                         </div>
                     </div>
                     <h2 className="text-4xl font-bold mb-4">
-                        Join Thousands of Teams
+                        Join Thousands of Teams on Jello
                     </h2>
                     <p className="text-lg text-blue-100 mb-8">
-                        Start managing your projects efficiently. Invite your team, create tasks, and collaborate seamlessly in one powerful platform.
+                        Start managing your projects efficiently. Invite your team, create tasks, and collaborate seamlessly in Jello's powerful platform.
                     </p>
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">

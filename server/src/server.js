@@ -7,6 +7,8 @@ const logger = require('./config/logger');
 const socketAuthMiddleware = require('./middleware/socket.middleware');
 const { initializeSocketHandlers } = require('./socket/socket.handlers');
 
+require('./workers/email.worker');
+
 const PORT = process.env.PORT || 5000;
 
 // Connect to Database

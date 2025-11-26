@@ -3,7 +3,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const swaggerUi = require('swagger-ui-express');
 const logger = require('./config/logger');
+const swaggerSpec = require('./config/swagger');
 const errorHandler = require('./middleware/error.middleware');
 const NotFoundError = require('./errors/NotFoundError');
 const { apiLimiter } = require('./middleware/rateLimiter.middleware');
@@ -66,11 +68,17 @@ if (process.env.NODE_ENV !== 'production') {
 // Basic Route
 app.get('/', (req, res) => {
     res.json({
-        message: 'Project Management API',
+        message: 'Jello API',
         version: '1.0.0',
-        status: 'running'
+        status: 'running',
+        docs: '/api-docs'
     });
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: 'Jello API Documentation',
+    customCss: '.swagger-ui .topbar { display: none }'
+}));
 
 // Health check endpoint (no rate limiting)
 app.get('/health', (req, res) => {

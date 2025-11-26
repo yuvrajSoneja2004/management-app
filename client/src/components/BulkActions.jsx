@@ -1,118 +1,147 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckSquare, Trash2, UserPlus } from 'lucide-react';
-import { bulkUpdateStatus, bulkAssign, bulkDelete } from '../api/project';
-import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { X, CheckSquare, Trash2, UserPlus, ArrowRight } from 'lucide-react';
 
-const BulkActions = ({ selectedTasks, onActionComplete, members = [], userRole }) => {
-    const [isLoading, setIsLoading] = useState(false);
+const BulkActions = ({ selectedCount, onClearSelection, onBulkStatus, onBulkAssign, onBulkDelete, members = [] }) => {
+    const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+    const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [selectedAssignees, setSelectedAssignees] = useState([]);
 
-    const isViewer = userRole?.toLowerCase() === 'viewer';
+    if (selectedCount === 0) return null;
 
-    if (selectedTasks.length === 0) return null;
-
-    const handleBulkStatus = async (status) => {
-        if (isViewer) {
-            toast.error("Permission Denied", { description: "Viewers cannot change task status." });
-            return;
-        }
-        setIsLoading(true);
-        try {
-            await bulkUpdateStatus(selectedTasks, status);
-            onActionComplete();
-            toast.success(`${selectedTasks.length} task(s) updated successfully`);
-        } catch (error) {
-            console.error('Bulk status update failed:', error);
-            toast.error(error.response?.data?.message || 'Failed to update tasks');
-        } finally {
-            setIsLoading(false);
+    const handleStatusSubmit = () => {
+        if (selectedStatus) {
+            onBulkStatus(selectedStatus);
+            setStatusDialogOpen(false);
+            setSelectedStatus('');
         }
     };
 
-    const handleBulkAssign = async (assigneeId) => {
-        if (isViewer) {
-            toast.error("Permission Denied", { description: "Viewers cannot assign tasks." });
-            return;
-        }
-        setIsLoading(true);
-        try {
-            await bulkAssign(selectedTasks, [assigneeId]);
-            onActionComplete();
-            toast.success(`${selectedTasks.length} task(s) assigned successfully`);
-        } catch (error) {
-            console.error('Bulk assign failed:', error);
-            toast.error(error.response?.data?.message || 'Failed to assign tasks');
-        } finally {
-            setIsLoading(false);
+    const handleAssignSubmit = () => {
+        if (selectedAssignees.length > 0) {
+            onBulkAssign(selectedAssignees);
+            setAssignDialogOpen(false);
+            setSelectedAssignees([]);
         }
     };
 
-    const handleBulkDelete = async () => {
-        if (isViewer) {
-            toast.error("Permission Denied", { description: "Viewers cannot delete tasks." });
-            return;
-        }
-        if (!confirm(`Are you sure you want to delete ${selectedTasks.length} task(s)?`)) {
-            return;
-        }
-
-        setIsLoading(true);
-        try {
-            await bulkDelete(selectedTasks);
-            onActionComplete();
-            toast.success(`${selectedTasks.length} task(s) deleted successfully`);
-        } catch (error) {
-            console.error('Bulk delete failed:', error);
-            toast.error(error.response?.data?.message || 'Failed to delete tasks');
-        } finally {
-            setIsLoading(false);
-        }
+    const handleDeleteSubmit = () => {
+        onBulkDelete();
+        setDeleteDialogOpen(false);
     };
 
     return (
-        <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
-            <CheckSquare className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                {selectedTasks.length} task{selectedTasks.length > 1 ? 's' : ''} selected
-            </span>
-            <div className="flex gap-2 ml-auto">
-                <Select onValueChange={handleBulkStatus} disabled={isLoading || isViewer}>
-                    <SelectTrigger className="w-[140px] h-8">
-                        <SelectValue placeholder="Change status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="Todo">Todo</SelectItem>
-                        <SelectItem value="In Progress">In Progress</SelectItem>
-                        <SelectItem value="Review">Review</SelectItem>
-                        <SelectItem value="Completed">Completed</SelectItem>
-                    </SelectContent>
-                </Select>
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 border shadow-lg rounded-lg px-6 py-3 flex items-center gap-4 z-50 animate-in slide-in-from-bottom-5">
+            <div className="flex items-center gap-2 border-r pr-4">
+                <div className="bg-blue-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                    {selectedCount}
+                </div>
+                <span className="text-sm font-medium">Selected</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClearSelection}>
+                    <X className="h-4 w-4" />
+                </Button>
+            </div>
 
-                <Select onValueChange={handleBulkAssign} disabled={isLoading || isViewer}>
-                    <SelectTrigger className="w-[140px] h-8">
-                        <SelectValue placeholder="Assign to..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {members.map((member) => (
-                            <SelectItem key={member.user._id} value={member.user._id}>
-                                {member.user.username}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-                <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleBulkDelete}
-                    disabled={isLoading || isViewer}
-                    className={isViewer ? "opacity-50 cursor-not-allowed" : ""}
-                >
-                    <Trash2 className="h-4 w-4 mr-1" />
+            <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => setStatusDialogOpen(true)}>
+                    <CheckSquare className="h-4 w-4 mr-2" />
+                    Set Status
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setAssignDialogOpen(true)}>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Assign
+                </Button>
+                <Button variant="destructive" size="sm" onClick={() => setDeleteDialogOpen(true)}>
+                    <Trash2 className="h-4 w-4 mr-2" />
                     Delete
                 </Button>
             </div>
+
+            {/* Status Dialog */}
+            <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Update Status for {selectedCount} tasks</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Label className="mb-2 block">Select New Status</Label>
+                        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Todo">Todo</SelectItem>
+                                <SelectItem value="In Progress">In Progress</SelectItem>
+                                <SelectItem value="Review">Review</SelectItem>
+                                <SelectItem value="Completed">Completed</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setStatusDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleStatusSubmit} disabled={!selectedStatus}>Update</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Assign Dialog */}
+            <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Assign {selectedCount} tasks</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Label className="mb-2 block">Select Members</Label>
+                        <div className="border rounded-md p-2 max-h-60 overflow-y-auto space-y-2">
+                            {members.map(member => (
+                                <div key={member.user._id} className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id={`member-${member.user._id}`}
+                                        checked={selectedAssignees.includes(member.user._id)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedAssignees([...selectedAssignees, member.user._id]);
+                                            } else {
+                                                setSelectedAssignees(selectedAssignees.filter(id => id !== member.user._id));
+                                            }
+                                        }}
+                                        className="rounded border-gray-300"
+                                    />
+                                    <label htmlFor={`member-${member.user._id}`} className="text-sm cursor-pointer flex-1">
+                                        {member.user.username} ({member.role})
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setAssignDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleAssignSubmit} disabled={selectedAssignees.length === 0}>Assign</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Dialog */}
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Delete {selectedCount} tasks?</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4 text-muted-foreground">
+                        Are you sure you want to delete these tasks? This action cannot be undone.
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                        <Button variant="destructive" onClick={handleDeleteSubmit}>Delete</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

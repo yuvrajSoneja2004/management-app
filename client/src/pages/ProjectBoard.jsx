@@ -3,7 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetProjectQuery } from '@/store/api/projectsApi';
-import { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation } from '@/store/api/tasksApi';
+import {
+    useGetTasksQuery,
+    useCreateTaskMutation,
+    useUpdateTaskMutation,
+    useBulkUpdateStatusMutation,
+    useBulkAssignMutation,
+    useBulkDeleteMutation
+} from '@/store/api/tasksApi';
 import useAuthStore from '../store/authStore';
 import useSocket from '@/hooks/useSocket';
 import useRealtimeUpdates from '@/hooks/useRealtimeUpdates';
@@ -17,7 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, ArrowLeft, Paperclip, FileText, Activity as ActivityIcon, Users, Loader2, X, Download } from 'lucide-react';
+import { Plus, ArrowLeft, Paperclip, FileText, Activity as ActivityIcon, Users, Loader2, X, Download, FileDown, Search } from 'lucide-react';
 import FileUpload from '../components/FileUpload';
 import InviteMemberDialog from '../components/InviteMemberDialog';
 import InvitationsList from '../components/InvitationsList';
@@ -29,6 +36,7 @@ import TaskCardSkeleton from '@/components/skeletons/TaskCardSkeleton';
 import KanbanBoard from '../components/KanbanBoard';
 import ActiveUsers from '../components/ActiveUsers';
 import { toast } from 'sonner';
+import useDebounce from '@/hooks/useDebounce';
 
 const ProjectBoard = () => {
     const { id } = useParams();
@@ -39,6 +47,9 @@ const ProjectBoard = () => {
     const { data: projectData, isLoading: isLoadingProject } = useGetProjectQuery(id);
     const [createTask] = useCreateTaskMutation();
     const [updateTask] = useUpdateTaskMutation();
+    const [bulkUpdateStatus] = useBulkUpdateStatusMutation();
+    const [bulkAssign] = useBulkAssignMutation();
+    const [bulkDelete] = useBulkDeleteMutation();
 
     // Socket.io integration
     useSocket(); // Initialize socket connection
@@ -50,6 +61,23 @@ const ProjectBoard = () => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showStats, setShowStats] = useState(false);
     const [selectedTasks, setSelectedTasks] = useState([]);
+    const [showMyTasks, setShowMyTasks] = useState(false);
+
+    // Filter state
+    const [filters, setFilters] = useState({
+        status: '',
+        priority: '',
+        search: '',
+        sortBy: '',
+        order: 'desc',
+        assignee: ''
+    });
+
+    // Fetch all tasks for export (don't display, just for data)
+    const { data: todoData } = useGetTasksQuery({ projectId: id, status: 'Todo', page: 1, limit: 100 });
+    const { data: inProgressData } = useGetTasksQuery({ projectId: id, status: 'In Progress', page: 1, limit: 100 });
+    const { data: reviewData } = useGetTasksQuery({ projectId: id, status: 'Review', page: 1, limit: 100 });
+    const { data: completedData } = useGetTasksQuery({ projectId: id, status: 'Completed', page: 1, limit: 100 });
 
     const {
         register: registerTask,
@@ -135,6 +163,89 @@ const ProjectBoard = () => {
 
     const clearSelection = () => setSelectedTasks([]);
 
+    const handleFilterChange = (newFilters) => {
+        setFilters(prev => ({ ...prev, ...newFilters }));
+    };
+
+    const handleMyTasksToggle = () => {
+        const newState = !showMyTasks;
+        setShowMyTasks(newState);
+        setFilters(prev => ({
+            ...prev,
+            assignee: newState ? user._id : ''
+        }));
+    };
+
+    // Bulk Operations Handlers
+    const handleBulkStatus = async (status) => {
+        if (isViewer) return;
+        try {
+            await bulkUpdateStatus({ taskIds: selectedTasks, status, projectId: id }).unwrap();
+            toast.success(`Updated ${selectedTasks.length} tasks to ${status}`);
+            clearSelection();
+        } catch (error) {
+            toast.error("Failed to update tasks");
+        }
+    };
+
+    const handleBulkAssign = async (assigneeIds) => {
+        if (isViewer) return;
+        try {
+            await bulkAssign({ taskIds: selectedTasks, assigneeIds, projectId: id }).unwrap();
+            toast.success(`Assigned ${selectedTasks.length} tasks`);
+            clearSelection();
+        } catch (error) {
+            toast.error("Failed to assign tasks");
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (isViewer) return;
+        try {
+            await bulkDelete({ taskIds: selectedTasks, projectId: id }).unwrap();
+            toast.success(`Deleted ${selectedTasks.length} tasks`);
+            clearSelection();
+        } catch (error) {
+            toast.error("Failed to delete tasks");
+        }
+    };
+
+    const handleExportJSON = () => {
+        try {
+            // Collect all tasks from the RTK Query cache
+            const allTasks = [
+                ...(todoData?.tasks || []),
+                ...(inProgressData?.tasks || []),
+                ...(reviewData?.tasks || []),
+                ...(completedData?.tasks || [])
+            ];
+
+            if (allTasks.length === 0) {
+                toast.info('No tasks to export');
+                return;
+            }
+
+            // Create JSON blob
+            const dataStr = JSON.stringify(allTasks, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+            // Download file
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${currentProject?.name || 'project'}-tasks-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success(`Exported ${allTasks.length} tasks successfully`);
+        } catch (error) {
+            console.error('Export error:', error);
+            toast.error('Failed to export tasks');
+        }
+    };
+
     const columns = ['Todo', 'In Progress', 'Review', 'Completed'];
 
     if (isLoading && !currentProject) {
@@ -183,6 +294,10 @@ const ProjectBoard = () => {
                             <Button variant="outline" size="sm" onClick={() => setShowStats(!showStats)} className={`flex-shrink-0 ${showStats ? 'bg-blue-50 border-blue-200 text-blue-600' : ''}`}>
                                 <ActivityIcon className="h-4 w-4" />
                                 <span className="ml-1 hidden sm:inline">Stats</span>
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={handleExportJSON} className="flex-shrink-0">
+                                <FileDown className="h-4 w-4" />
+                                <span className="ml-1 hidden sm:inline">Export JSON</span>
                             </Button>
                             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                 <DialogTrigger asChild>
@@ -288,19 +403,27 @@ const ProjectBoard = () => {
                         </div>
                     </div>
 
+                    {/* Filters */}
+                    <div className="mb-4">
+                        <TaskFilters
+                            onFilterChange={handleFilterChange}
+                            showMyTasks={showMyTasks}
+                            onMyTasksToggle={handleMyTasksToggle}
+                        />
+                    </div>
+
                     {showStats ? (
                         <div className="mb-6 animate-fade-in">
                             <ProjectStatistics projectId={id} />
                         </div>
                     ) : (
-                        <div className="h-[calc(100vh-280px)] pb-4">
+                        <div className="h-[calc(100vh-340px)] pb-4">
                             <KanbanBoard
                                 projectId={id}
+                                filters={filters}
                                 onTaskClick={(task) => setSelectedTask(task)}
                                 onAddTask={(status) => {
                                     setIsDialogOpen(true);
-                                    // Pre-select status if needed, though form uses default
-                                    // You might want to update form default values here if supported
                                 }}
                                 isViewer={isViewer}
                                 selectedTasks={selectedTasks}
@@ -332,6 +455,16 @@ const ProjectBoard = () => {
                     </div>
                 </>
             )}
+
+            {/* Bulk Actions */}
+            <BulkActions
+                selectedCount={selectedTasks.length}
+                onClearSelection={clearSelection}
+                onBulkStatus={handleBulkStatus}
+                onBulkAssign={handleBulkAssign}
+                onBulkDelete={handleBulkDelete}
+                members={currentProject?.members || []}
+            />
 
             {/* Task Details Dialog */}
             <Dialog open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>

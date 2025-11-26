@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetProjectsQuery, useCreateProjectMutation, useArchiveProjectMutation, useUnarchiveProjectMutation } from '@/store/api/projectsApi';
 import { useLogoutMutation } from '@/store/api/authApi';
 import useAuthStore from '../store/authStore';
+import { useDebounce } from '@/hooks/useDebounce';
 import { projectSchema } from '@/lib/validationSchemas';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,14 +13,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, LogOut, FolderKanban, Users, CheckCircle2, Clock, Loader2, Archive, ArchiveRestore } from 'lucide-react';
+import { Plus, LogOut, FolderKanban, Users, CheckCircle2, Clock, Loader2, Archive, ArchiveRestore, Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import ProjectCardSkeleton from '@/components/skeletons/ProjectCardSkeleton';
 import { Pagination } from '@/components/ui/pagination';
+import siteLogo from '../assets/imgs/site_logo.png';
 
 const Dashboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState('');
     const projectsPerPage = 6;
 
     const { data, isLoading, error } = useGetProjectsQuery({
@@ -35,9 +38,24 @@ const Dashboard = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const navigate = useNavigate();
 
+    // Debounce search query
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
     // Safely access projects with default empty array
-    const projects = data?.projects || [];
+    const allProjects = data?.projects || [];
     const pagination = data?.pagination || { page: 1, pages: 1, total: 0 };
+
+    // Filter projects based on search query
+    const projects = useMemo(() => {
+        if (!debouncedSearchQuery.trim()) return allProjects;
+
+        const query = debouncedSearchQuery.toLowerCase();
+        return allProjects.filter(project =>
+            project.name?.toLowerCase().includes(query) ||
+            project.description?.toLowerCase().includes(query) ||
+            project.tags?.some(tag => tag.toLowerCase().includes(query))
+        );
+    }, [allProjects, debouncedSearchQuery]);
 
     const {
         register,
@@ -116,13 +134,16 @@ const Dashboard = () => {
                 <div className="absolute inset-0 gradient-mesh opacity-20"></div>
                 <div className="container-responsive relative z-10">
                     <div className="py-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div className="animate-slide-down">
-                            <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-                                My Projects
-                            </h1>
-                            <p className="text-blue-100">
-                                Welcome back, <span className="font-semibold">{user?.username}</span>
-                            </p>
+                        <div className="animate-slide-down flex items-center gap-4">
+                            <img src={siteLogo} alt="Jello Logo" className="w-12 h-12 object-contain bg-white/10 rounded-lg p-1" />
+                            <div>
+                                <h1 className="text-3xl sm:text-4xl font-bold mb-1">
+                                    My Projects
+                                </h1>
+                                <p className="text-blue-100">
+                                    Welcome back, <span className="font-semibold">{user?.username}</span>
+                                </p>
+                            </div>
                         </div>
                         <div className="flex items-center gap-3 animate-slide-down">
                             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -251,6 +272,25 @@ const Dashboard = () => {
             </header>
 
             <main className="container-responsive py-8">
+                {/* Search Bar */}
+                <div className="mb-6 max-w-md">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="text"
+                            placeholder="Search projects by name, description, or tags..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+                    {debouncedSearchQuery && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                            Found {projects.length} project{projects.length !== 1 ? 's' : ''}
+                        </p>
+                    )}
+                </div>
+
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
                     <Card className="border-0 shadow-soft hover-lift">
