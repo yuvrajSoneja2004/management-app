@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./server
+    container_name: jello-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - PORT=5000
+      - CLIENT_URL=${CLIENT_URL}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
+      - AZURE_STORAGE_CONTAINER_NAME=${AZURE_STORAGE_CONTAINER_NAME}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - REDIS_URL=${REDIS_URL}
+    networks:
+      - jello-network
+
+  # Email worker (separate container for processing email queue)
+  email-worker:
+    build: ./server
+    container_name: jello-email-worker
+    restart: unless-stopped
+    command: node src/workers/email.worker.js
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=${REDIS_URL}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - CLIENT_URL=${CLIENT_URL}
+    networks:
+      - jello-network
+
+networks:
+  jello-network:
+    driver: bridge
